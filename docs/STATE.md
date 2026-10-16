@@ -28,8 +28,9 @@ Last updated: 2026-10-15. Keep under ~120 lines. History goes to `docs/state-arc
 5. **DECIDED 2026-10-16 (user): no approval step.** One user (the owner) writes and publishes.
    Shoutrrr's missing approval step is therefore not a gap. The confirm-before-publish screen
    (CLAUDE.md) still applies - that is a safety step, not an approval workflow.
-6. **DECIDED 2026-10-16 (user): yes to git + private GitHub repo.** Local repo initialised by
-   Claude 2026-10-16. GitHub repo creation and push: user, walked through step by step.
+6. **DONE 2026-10-16: git + private GitHub repo** `github.com/sethannub/SocialApp`, branch `main`.
+   Push from the `!` prompt runs in Git Bash: use forward slashes in paths
+   (`! git -C C:/Codex/SocialApp push`).
 7. **Test accounts.** Which accounts can be used for testing without anyone seeing the posts.
    (Still open - the Y5Media accounts are real, so drafts only until this is answered.)
 
