@@ -5,41 +5,15 @@ Anything found while fixing something else goes here immediately, with what it b
 
 ---
 
-## Sprint 2 - A made-up invitation code must not create an account   [OPEN]
-Mode: Build (security fix in upstream code)
-Why: sign-up is already off after the first user (Shoutrrr default), but `/register` with ANY
-non-empty `invitation` value creates an account - proven locally 2026-10-16 with `bogus123`.
-On a public server a stranger gets their own workspace and could connect their own social
-accounts through OUR Meta/LinkedIn/X developer apps.
-Cause (read, not guessed): `InstanceSettings::registrationsAllowed()` returns true for any
-non-empty token without looking it up; `CreateNewUser` then creates the user, and the failed
-`acceptByToken()` result is ignored.
-Files in scope:
-- `app/app/Support/InstanceSettings.php` - `registrationsAllowed()`: a token only counts if
-  `WorkspaceInvitation::findByToken()` finds it and `isValid()` (not expired, not accepted)
-- `app/tests/Feature/Auth/RegistrationTest.php` - new tests (below)
-- `docs/UPSTREAM.md` - "Our changes to upstream" list (Apache-2.0 4b: mark changed files)
-Do NOT touch:
-- Any other auth code (login, passkeys, 2FA, Socialite - Socialite is off by default)
-- Workspace-creation setting, Bluesky/Discord, composer, timezones (separate items below)
-- The local probe user `probe-b@socialapp.test` stays until the fix is verified, then removed
-Acceptance criteria:
-- [ ] Owner exists + registration off: made-up invitation -> no user created, error on `email`
-- [ ] Same for an expired invitation and an already-accepted invitation
-- [ ] Valid invitation still registers (existing behaviour kept), with the invited email
-- [ ] `/register?invitation=<made-up>` redirects to login (screen check uses the same rule)
-- [ ] First user on an empty instance can still register (owner bootstrap kept)
-- [ ] Full suite still passes (`scripts\test.ps1`); Pint clean on the changed files
-- [ ] Re-run the local curl probe against the rebuilt container: `bogus123` is refused
-- [ ] Browser: `/register?invitation=bogus123` while logged out shows the login page
-- [ ] Offer to report it upstream to coollabsio/shoutrrr (user decides - outward-facing)
+Waiting on the user:
+- **Report the invitation bypass (Sprint 2) to Shoutrrr upstream?** Every Shoutrrr install has it.
+  Outward-facing, so the user decides. Proposed: a private security advisory, drafted by Claude,
+  sent by the user. Not a public issue.
 
 ---
 
-Found in Sprint 1 (2026-10-16), Shoutrrr v1.5.4 as-is. Not fixed yet. Most severe first.
+Open items, most severe first. Items 2-6 found in Sprint 1 (2026-10-16), Shoutrrr v1.5.4 as-is.
 
-1. ~~Anyone who can reach the app can create an account.~~ Corrected 2026-10-16: wrong as
-   written - sign-up is off after the first user. The real hole is Sprint 2 above.
 2. **The composer defaults to "Now" and "Publish now" is the main button.** CLAUDE.md says
    schedule and draft are the default paths and publish-now needs a preview of every platform's
    version plus a confirm step. Needs a mockup first (`mockup-first`).
@@ -49,7 +23,15 @@ Found in Sprint 1 (2026-10-16), Shoutrrr v1.5.4 as-is. Not fixed yet. Most sever
    (CLAUDE.md standing rule 6). `[Likely]` cause, not yet checked.
 4. **Bluesky and Discord can be connected with no app keys** (app password / webhook). We don't
    use them; hide or disable them so nothing gets connected by accident.
-5. **Docker publishes on all network interfaces by default** (`0.0.0.0`). Worked around locally
-   with `APP_PORT=127.0.0.1:8095`. On EZEOS it must sit behind the tunnel / nginx only.
+5. **Server checklist (before EZEOS), not code:**
+   - Docker publishes on all interfaces by default (`0.0.0.0`). Locally worked around with
+     `APP_PORT=127.0.0.1:8095`. On EZEOS: bind to 127.0.0.1, reach it only via the tunnel.
+   - Use the production compose file / `APP_ENV=production`, `APP_DEBUG=false`. With
+     `APP_ENV=local` the login page pre-fills `test@example.com` / `password` and debug pages
+     show internals (`FortifyServiceProvider::defaultLoginCredentials()`, read 2026-10-16).
+   - `SESSION_SECURE_COOKIE=true`, `TRUSTED_PROXIES` set for the tunnel (Shoutrrr README).
 6. Minor: the "release notes" link points at `.../releases/tag/` with no version (APP_VERSION not
    set in a source build). Cosmetic.
+7. Minor, found in Sprint 2: `FortifyServiceProvider` passes the raw `?invitation=` query value
+   to `registrationsAllowed(?string)`. A crafted `?invitation[]=x` is an array and would likely
+   throw a TypeError (500 page) on the login screen. `[Likely]`, not tested. Upstream code.

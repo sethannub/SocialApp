@@ -14,6 +14,36 @@ Entry shape:
 
 ---
 
+## 2026-10-16 - Sprint 2: a made-up invitation code must not create an account
+- Mode: Build (security fix in upstream code)
+- Correction first: Sprint 1's item 1 ("anyone can create an account") was wrong. Shoutrrr turns
+  sign-up off once the first user (the owner) exists; I had tested as the first user.
+- The real hole: `InstanceSettings::registrationsAllowed()` accepted any non-empty invitation
+  token without looking it up. Proven locally: POST /register with `invitation=bogus123` ->
+  account created and logged in. Covers the Socialite path too (same function).
+- What changed:
+  - `app/app/Support/InstanceSettings.php`: new `invitationTokenIsValid()` (token must match a
+    pending, unexpired invitation); `registrationsAllowed()` uses it. Marked "SocialApp change:".
+  - `app/tests/Feature/Auth/RegistrationTest.php`: 5 new tests.
+  - `scripts/test.ps1` / `run-tests.sh`: working-tree PHP code is now mounted (tests see edits
+    without a rebuild); optional Pint check via `$env:PINT_FILES`.
+  - `docs/UPSTREAM.md`: "Our changes to upstream" table.
+- Acceptance criteria: all met (see `ai/tasks-archive.md`).
+  - Full suite: **2035 passed** (2030 + 5 new), Pint clean on both files.
+  - The new tests prove something: run against the ORIGINAL code in the image, the 4 security
+    tests FAIL and "valid invitation still registers" passes; against the fix all pass.
+  - Rebuilt container, curl probe: GET `/register?invitation=bogus123` -> 302 to /login;
+    POST with `bogus123` -> refused, no user created.
+- Review findings: social login path covered (same function); invitee email still forced to the
+  invited address (tested); first-user bootstrap unchanged (existing test passes). New, not
+  fixed (out of scope, upstream): array `?invitation[]=` likely 500s the login page -> tasks #7.
+  Login page pre-fills test credentials when `APP_ENV=local` only (read) -> server checklist #5.
+- Browser: logged the test user out, opened `/register?invitation=bogus123` -> login page with
+  "Registration is disabled for this instance." Could NOT see: the user menu's log-out item
+  (page reader did not expose the dropdown; logged out via the app's own POST /logout instead).
+- Cleanup: local probe user `probe-b@socialapp.test` and its empty workspace removed.
+- Commit: see git log ("Sprint 2: ...")
+
 ## 2026-10-16 - Sprint 1: bring in Shoutrrr, run it locally, drafts only
 - Mode: Build
 - What changed: `app/` = Shoutrrr v1.5.4 via `git subtree` (commit 6749d26, unchanged upstream);

@@ -100,6 +100,87 @@ test('registration screen redirects to login when public registration is disable
         ->assertSessionMissing('status');
 });
 
+test('a made-up invitation token does not bypass closed registration', function () {
+    User::factory()->instanceOwner()->create();
+
+    $this->post(route('register.store'), [
+        'name' => 'Intruder',
+        'email' => 'intruder@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'invitation' => 'bogus123',
+    ])->assertSessionHasErrors('email');
+
+    $this->assertGuest();
+    expect(User::where('email', 'intruder@example.com')->exists())->toBeFalse();
+});
+
+test('an expired invitation does not bypass closed registration', function () {
+    User::factory()->instanceOwner()->create();
+    [$plain, $hash] = WorkspaceInvitation::generateToken();
+    WorkspaceInvitation::factory()->expired()->create([
+        'email' => 'late@example.com',
+        'token' => $hash,
+    ]);
+
+    $this->post(route('register.store'), [
+        'name' => 'Late User',
+        'email' => 'late@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'invitation' => $plain,
+    ])->assertSessionHasErrors('email');
+
+    expect(User::where('email', 'late@example.com')->exists())->toBeFalse();
+});
+
+test('an already accepted invitation does not bypass closed registration', function () {
+    User::factory()->instanceOwner()->create();
+    [$plain, $hash] = WorkspaceInvitation::generateToken();
+    WorkspaceInvitation::factory()->create([
+        'email' => 'reused@example.com',
+        'token' => $hash,
+        'accepted_at' => now()->subHour(),
+    ]);
+
+    $this->post(route('register.store'), [
+        'name' => 'Second Use',
+        'email' => 'someone-else@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'invitation' => $plain,
+    ])->assertSessionHasErrors('email');
+
+    expect(User::where('email', 'someone-else@example.com')->exists())->toBeFalse();
+});
+
+test('a valid invitation still registers with the invited email', function () {
+    User::factory()->instanceOwner()->create();
+    [$plain, $hash] = WorkspaceInvitation::generateToken();
+    WorkspaceInvitation::factory()->create([
+        'email' => 'invited@example.com',
+        'token' => $hash,
+    ]);
+
+    $this->post(route('register.store'), [
+        'name' => 'Invited User',
+        'email' => 'typed-something-else@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'invitation' => $plain,
+    ])->assertSessionHasNoErrors();
+
+    $this->assertAuthenticated();
+    expect(auth()->user()->email)->toBe('invited@example.com');
+});
+
+test('registration screen with a made-up invitation redirects to login', function () {
+    User::factory()->instanceOwner()->create();
+
+    $this->get(route('register', ['invitation' => 'bogus123']))
+        ->assertRedirect(route('login', absolute: false));
+});
+
 test('login screen knows public registration is disabled', function () {
     User::factory()->instanceOwner()->create();
 

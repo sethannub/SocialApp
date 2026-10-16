@@ -8,6 +8,7 @@ use App\Enums\InstanceRole;
 use App\Enums\Platform;
 use App\Models\InstanceSetting;
 use App\Models\User;
+use App\Models\WorkspaceInvitation;
 use Illuminate\Support\Facades\Cache;
 
 class InstanceSettings
@@ -124,11 +125,24 @@ class InstanceSettings
             return true;
         }
 
-        if ($invitationToken !== null && $invitationToken !== '') {
+        if ($this->invitationTokenIsValid($invitationToken)) {
             return true;
         }
 
         return $this->registrationsEnabled();
+    }
+
+    /**
+     * SocialApp change: a token only bypasses closed registration when it belongs to a
+     * pending, unexpired invitation. Upstream accepted any non-empty string.
+     */
+    public function invitationTokenIsValid(?string $invitationToken): bool
+    {
+        if ($invitationToken === null || $invitationToken === '') {
+            return false;
+        }
+
+        return WorkspaceInvitation::findByToken($invitationToken)?->isValid() ?? false;
     }
 
     public function ownerExists(): bool

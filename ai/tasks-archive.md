@@ -2,6 +2,25 @@
 
 ---
 
+## Sprint 2 - A made-up invitation code must not create an account   [DONE 2026-10-16]
+Mode: Build (security fix in upstream code)
+Why: `/register` with ANY non-empty `invitation` value created an account (proven locally).
+Acceptance criteria:
+- [x] Owner exists + registration off: made-up invitation -> no user created, error on `email`
+- [x] Same for an expired invitation and an already-accepted invitation
+- [x] Valid invitation still registers (existing behaviour kept), with the invited email
+- [x] `/register?invitation=<made-up>` redirects to login (screen check uses the same rule)
+- [x] First user on an empty instance can still register (owner bootstrap kept)
+- [x] Full suite still passes (`scripts\test.ps1`); Pint clean on the changed files
+- [x] Re-run the local curl probe against the rebuilt container: `bogus123` is refused
+- [x] Browser: `/register?invitation=bogus123` while logged out shows the login page
+- [x] Offer to report it upstream to coollabsio/shoutrrr (user decides - outward-facing)
+
+Also from Sprint 1's list: item 1 ("anyone can create an account") was wrong as written and was
+replaced by this sprint.
+
+---
+
 ## Sprint 1 - Bring in Shoutrrr and run it on this PC, drafts only   [DONE 2026-10-16]
 Mode: Build
 Why: get the open-source base (Shoutrrr v1.5.4) into our repo and see it working locally, with no

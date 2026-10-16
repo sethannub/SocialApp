@@ -30,4 +30,9 @@ root `CLAUDE.md` wins on how we work (sprints, publishing safety, plain words).
 
 ## Our changes to upstream
 
-None yet.
+Each changed upstream file carries a "SocialApp change:" comment at the change.
+
+| File | Change | Why | Sprint |
+|---|---|---|---|
+| `app/app/Support/InstanceSettings.php` | `registrationsAllowed()` only lets an invitation token bypass closed registration if it is a real, pending, unexpired invitation (new `invitationTokenIsValid()`) | Upstream accepted any non-empty string, so `/register?invitation=anything` created an account | 2 |
+| `app/tests/Feature/Auth/RegistrationTest.php` | 5 tests: made-up / expired / accepted tokens refused, valid invite works, register screen redirects | Cover the fix above | 2 |
