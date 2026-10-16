@@ -5,27 +5,22 @@ Anything found while fixing something else goes here immediately, with what it b
 
 ---
 
-## Sprint 1 - Bring in Shoutrrr and run it on this PC, drafts only   [OPEN]
-Mode: Build
-Why: get the open-source base (Shoutrrr v1.5.4) into our repo and see it working locally, with no
-way for it to publish anything, before we change a line of it.
-Files in scope:
-- `app/` (new) - Shoutrrr v1.5.4 source, brought in with `git subtree` from
-  `https://github.com/coollabsio/shoutrrr` tag `v1.5.4`, so later upstream versions can be pulled in
-- `app/.env` - local only, git-ignored, created from Shoutrrr's own example file
-- `docs/STATE.md` - "how to run it locally" section
-- `docs/UPSTREAM.md` (new) - which Shoutrrr version we are on and how to update it
-Do NOT touch:
-- Any Shoutrrr code (no edits inside `app/` beyond the local `.env`) - this sprint is run-as-is
-- EZEOS or any server
-- Any real social account. **No platform credentials (`X_*`, `LINKEDIN_*`, `FACEBOOK_*`,
-  `THREADS_*`) go into `.env`** - without them no account can be connected, so nothing can publish
-Acceptance criteria:
-- [ ] `app/` contains Shoutrrr v1.5.4 with its LICENSE intact; history kept via git subtree
-- [ ] `app/.env` exists locally, is git-ignored, and has no platform credentials
-- [ ] Docker Desktop started; Shoutrrr's development compose file builds and starts
-- [ ] Shoutrrr's own test suite runs inside the container; the pass/fail count is recorded as-is
-- [ ] App opens in the browser; a local user is registered; a draft post is written, saved and
-      reopened; confirmed that no social account is connected
-- [ ] Screen opened in the browser and driven (Claude in Chrome), screenshots taken
-- [ ] `docs/STATE.md` and `docs/UPSTREAM.md` say how to start, stop and update it
+Found in Sprint 1 (2026-10-16), Shoutrrr v1.5.4 as-is. Not fixed yet. Most severe first.
+
+1. **Anyone who can reach the app can create an account.** `/register` is open. Harmless on
+   localhost; on a public address (EZEOS) a stranger could sign up and, once accounts are
+   connected, see or post through them. Must be closed (registration off, or invite-only) before
+   it goes on any server.
+2. **The composer defaults to "Now" and "Publish now" is the main button.** CLAUDE.md says
+   schedule and draft are the default paths and publish-now needs a preview of every platform's
+   version plus a confirm step. Needs a mockup first (`mockup-first`).
+3. **Times are shown in UTC, not Dubai time.** The test draft saved at ~12:00 Dubai showed
+   "8:00 AM". The workspace timezone is unset; Shoutrrr has a "Set your workspace timezone" step.
+   Check whether setting it to Asia/Dubai is enough, or whether it needs to be the default
+   (CLAUDE.md standing rule 6). `[Likely]` cause, not yet checked.
+4. **Bluesky and Discord can be connected with no app keys** (app password / webhook). We don't
+   use them; hide or disable them so nothing gets connected by accident.
+5. **Docker publishes on all network interfaces by default** (`0.0.0.0`). Worked around locally
+   with `APP_PORT=127.0.0.1:8095`. On EZEOS it must sit behind the tunnel / nginx only.
+6. Minor: the "release notes" link points at `.../releases/tag/` with no version (APP_VERSION not
+   set in a source build). Cosmetic.

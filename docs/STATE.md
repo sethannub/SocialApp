@@ -4,8 +4,19 @@ Last updated: 2026-10-15. Keep under ~120 lines. History goes to `docs/state-arc
 
 ## Where we are
 
-- Project folder created. Working method, skills and record files set up. **No code yet.**
-- Not a git repository yet (decision 5 below).
+- Shoutrrr v1.5.4 is in `app/` (git subtree, see `docs/UPSTREAM.md`), unchanged.
+- Runs locally in Docker at **http://localhost:8095** (this PC only). No social account connected,
+  no platform keys in `.env` - it cannot publish. Local test login is in `app/.env` (git-ignored).
+
+## Run it locally
+
+- Start Docker Desktop, then: `docker compose -f app/docker-compose.development.yaml --project-directory app up -d`
+  (add `--build` after changing code). Stop: same with `down`. Data lives in Docker volumes
+  `shoutrrr_sqlite` / `shoutrrr_storage`; `down -v` wipes them.
+- Port 8080 is taken by the Odysseus stack on this PC, so `.env` sets `APP_PORT=127.0.0.1:8095`
+  (the `127.0.0.1:` part keeps it off the office network).
+- Tests: `.\scripts\test.ps1` (throwaway container, ~1 min after the first run). Baseline
+  2026-10-16: **2030 passed**, 0 failed.
 
 ## Open decisions (these come before any code)
 
@@ -52,4 +63,4 @@ None recorded yet. Until there are some, development uses draft mode only.
 
 ## Outstanding problems
 
-None (no code yet).
+Found in Sprint 1, listed in `ai/tasks.md` - fix these before new features.
