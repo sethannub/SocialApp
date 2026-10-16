@@ -90,7 +90,10 @@ function ShareFooter() {
             <div className="mx-auto mb-5 h-px w-16 bg-border" />
             <p className="text-[12px] text-muted-foreground">
                 Shared with{' '}
-                <span className="font-medium text-foreground">Y5Media Social</span>.
+                <span className="font-medium text-foreground">
+                    Y5Media Social
+                </span>
+                .
             </p>
         </footer>
     );

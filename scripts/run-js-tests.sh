@@ -13,6 +13,6 @@ php artisan wayfinder:generate --with-form >> /out/js.txt 2>&1
 {
   echo "=== vitest"; bun x vitest run > /out/vitest-full.txt 2>&1; tail -6 /out/vitest-full.txt; echo "generated helpers in /work: $(ls resources/js/actions 2>/dev/null | wc -l) entries"
   echo "=== oxlint"; bun x oxlint 2>&1 | tail -15
-  echo "=== oxfmt"; bun x oxfmt --check resources/ 2>&1 | tail -15
-  echo "=== tsc"; bun x tsc --noEmit 2>&1 | tail -20; echo "tsc exit: $?"
+  echo "=== oxfmt"; bun x oxfmt --check resources/ > /out/oxfmt.txt 2>&1; echo "oxfmt exit: $?"; tail -15 /out/oxfmt.txt
+  echo "=== tsc"; bun x tsc --noEmit > /out/tsc.txt 2>&1; echo "tsc exit: $?"; tail -20 /out/tsc.txt
 } >> /out/js.txt 2>&1

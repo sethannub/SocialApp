@@ -159,8 +159,9 @@ export default function ApiKeys({ apiKeys }: Props) {
                     <CardHeader>
                         <CardTitle>API keys</CardTitle>
                         <CardDescription>
-                            Call the Y5Media Social API from scripts, cron jobs, and
-                            integrations. Each key acts on this workspace only.
+                            Call the Y5Media Social API from scripts, cron jobs,
+                            and integrations. Each key acts on this workspace
+                            only.
                         </CardDescription>
                         {apiKeys.length > 0 && (
                             <CardAction>

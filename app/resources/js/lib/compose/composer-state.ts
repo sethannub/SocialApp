@@ -31,7 +31,9 @@ export type SaveState =
     | 'offline'
     | 'conflict';
 
-export type ScheduleMode = 'now' | 'queue' | 'pick';
+// SocialApp change: no 'now' mode. Publishing immediately is a separate, confirmed action
+// (submit-bar's "Publish now…" menu item), never the tray's default or Ctrl+Enter.
+export type ScheduleMode = 'queue' | 'pick';
 
 export type ScheduleTray = {
     mode: ScheduleMode;
@@ -156,9 +158,9 @@ export function initialComposerState(
         segmentBreaks: [],
         placements: {},
         placementsByAccount: {},
-        scheduleTray: scheduleAt
-            ? { mode: 'pick', pickedAt: scheduleAt }
-            : { mode: 'now', pickedAt: null },
+        // SocialApp change: open in Pick time, never Now. ScheduleTray fills the time
+        // (defaultPickedAt) when pickedAt is null; publishing now lives behind a confirm window.
+        scheduleTray: { mode: 'pick', pickedAt: scheduleAt ?? null },
         conflict: null,
         autoRepost: null,
         skipSync: false,
@@ -405,7 +407,7 @@ function hydrate(post: PostView): ComposerState {
         placements: displayPlacements,
         placementsByAccount,
         scheduleTray: {
-            mode: post.scheduled_at ? 'pick' : 'now',
+            mode: 'pick',
             pickedAt: post.scheduled_at ?? null,
         },
         conflict: null,

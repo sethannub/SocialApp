@@ -992,26 +992,28 @@ export default function Composer({
         new Set(tabAccounts.map((account) => account.platform)),
     );
     const previewAccount = activeAccount ?? null;
+    // SocialApp change: one per-account preview builder, shared by the side preview and the
+    // Publish now confirm window.
+    const previewFor = (account: Account) =>
+        buildPlatformPreview({
+            account,
+            segments: state.overrideByAccount[account.id] ?? state.segments,
+            mentions: state.mentions,
+            media: state.media,
+            // Per-account media divergence now lives in placements (Task 15),
+            // not a global exclude set.
+            excludedMediaIds: new Set<string>(),
+            limit: limitForAccount(account),
+            autoSplit: state.autoSplitByAccount[account.id] ?? true,
+            format: state.formatByAccount[account.id] ?? 'feed',
+            // Show each media under the thread post it's placed on, using the
+            // previewed account's scope (diverged copy, else canonical).
+            placements:
+                state.placementsByAccount[account.id] ?? state.placements,
+            segmentBreaks: state.segmentBreaks,
+        });
     const platformPreview = previewAccount
-        ? buildPlatformPreview({
-              account: previewAccount,
-              segments:
-                  state.overrideByAccount[previewAccount.id] ?? state.segments,
-              mentions: state.mentions,
-              media: state.media,
-              // Per-account media divergence now lives in placements (Task 15),
-              // not a global exclude set.
-              excludedMediaIds: new Set<string>(),
-              limit: limitForAccount(previewAccount),
-              autoSplit: state.autoSplitByAccount[previewAccount.id] ?? true,
-              format: state.formatByAccount[previewAccount.id] ?? 'feed',
-              // Show each media under the thread post it's placed on, using the
-              // previewed account's scope (diverged copy, else canonical).
-              placements:
-                  state.placementsByAccount[previewAccount.id] ??
-                  state.placements,
-              segmentBreaks: state.segmentBreaks,
-          })
+        ? previewFor(previewAccount)
         : buildPlatformPreview({
               account: PREVIEW_FALLBACK_ACCOUNT,
               segments: state.segments,
@@ -1549,6 +1551,15 @@ export default function Composer({
                             onServerPost={publishStatus.applyServerPost}
                             blockedAccounts={blockedAccounts}
                             limits={limits}
+                            accounts={tabAccounts}
+                            buildPreview={previewFor}
+                            tz={schedulingTz}
+                            onScheduleInstead={() =>
+                                dispatch({
+                                    type: 'setScheduleTray',
+                                    tray: { mode: 'pick', pickedAt: null },
+                                })
+                            }
                         />
                     </div>
                 )}

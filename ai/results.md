@@ -14,6 +14,55 @@ Entry shape:
 
 ---
 
+## 2026-10-16 - Sprint 4: "Publish now" behind a menu and a confirm window (variant B)
+- Mode: Interface + Build. Decision: DESIGN_DECISIONS.md 2026-10-16 (variant B, user chooses on
+  problems). Mockup: https://claude.ai/artifact/8m24A4VtfJhA7pExNeav71
+- What changed (all marked "SocialApp change:"):
+  - `lib/compose/composer-state.ts`: posts open in Pick time; `'now'` removed from `ScheduleMode`
+    so the type checker rejects any path back to it.
+  - `components/compose/schedule-tray.tsx`: Queue / Pick time only; fills `defaultPickedAt(tz)`.
+  - `components/compose/submit-bar.tsx`: main button = Schedule / Add to queue (Ctrl+Enter too);
+    "▾" menu -> "Publish now…" -> confirm window; `handlePublishNow()` is the only publish call;
+    `TrayButton` forwards props/ref (needed as a Base UI render target).
+  - `components/compose/publish-confirm-dialog.tsx` (new): `planPublish()` + the window.
+  - `components/compose/composer.tsx`: shared `previewFor(account)`; new SubmitBar props.
+  - `app/Http/Controllers/Posts/PublishController.php`: `publish_ready_only` flag.
+  - Tests: `tests/Feature/Publishing/PublishReadyOnlyTest.php` (4),
+    `__tests__/publish-confirm-dialog.test.ts` (7), updated composer-state + submit-bar tests.
+  - Scripts: `scripts/format-js.sh` (oxfmt write via container); `run-js-tests.sh` prints
+    explicit `oxfmt exit` / `tsc exit`; `test.ps1` takes `$env:PEST_FILTER`.
+- Acceptance criteria:
+  - Opens in Pick time with a time; no Now: met (seen: "Queue | Pick time", "Oct 16, 12:00 PM").
+  - Ctrl+Enter never publishes: met by construction (`'now'` gone from the type; `handleSubmit`
+    has no publish call - asserted by test). Not pressed in the browser.
+  - Menu opens the window; nothing sent until its button: met (seen; queue empty afterwards).
+  - Window lists every account with reasons; "Publish to N accounts"; none-ready = no button:
+    met (seen with 3 fake accounts: LinkedIn "Needs reconnect" first, 2 Ready, "Publish to 2
+    accounts"); none-ready case covered by test only, not seen.
+  - Server flag: met. 4 tests; 2 of them fail on the original controller (proves they test it).
+  - Needs-reconnect listed as a problem: met (seen).
+  - PHP **2039 passed**, Pint clean; JS **908/909** (1 = known baseline), oxlint 0/0,
+    **oxfmt exit 0**, tsc exit 0.
+  - Browser both themes: met (light + dark screenshots; dark via a page-only class toggle).
+  - Keyboard focus starts on Cancel: met (checked `document.activeElement` = Cancel).
+- Review findings, most severe first:
+  - **Correction to Sprint 3:** it claimed "oxfmt clean"; 5 Sprint 3 files were not formatted.
+    My output filter hid the file list. Fixed now (all 428 files pass) and the script prints an
+    explicit exit code so an empty section can't be read as a pass again.
+  - The X preview (Shoutrrr's own, also in the composer) shows "Single post 318/280" in red while
+    the saved X target auto-splits into 2 parts and the server precheck finds no problem. Upstream
+    inconsistency, not fixed -> `ai/tasks.md`.
+  - Needs-reconnect accounts: with `publish_ready_only` the server still dispatches them (the
+    precheck doesn't know about expired logins); they fail as auth errors -> Failed / needs
+    attention. `[Likely]` from reading, not seen. Same visible outcome as "skipped" but one doomed
+    API call. Not fixed -> `ai/tasks.md`.
+  - "Goes live" time shows "(UTC)" - open item 2 (Dubai time), shown honestly.
+- Test data: 3 fake credential-less accounts + a "LOCAL TEST, NOT FOR PUBLISHING" draft created,
+  window opened twice and cancelled, nothing published (posts Draft, targets pending, 0 jobs),
+  then all removed by direct row delete (the app's delete action queues platform delete jobs).
+- Could NOT see: Ctrl+Enter pressed for real; the none-ready window; a real publish (by design).
+- Commit: see git log ("Sprint 4: ...")
+
 ## 2026-10-16 - Sprint 3: rebrand to Y5Media Social
 - Mode: Interface. Decision + mockup: DESIGN_DECISIONS.md "Branding: Y5Media palette, forest-green
   menu (variant A)", https://claude.ai/artifact/HzQGeog8wXPSfLcyp6XFh8 v2.
@@ -28,7 +77,8 @@ Entry shape:
   - Forest menu, Y5 mark, gradient buttons, Y5Media palette, both themes: met (seen).
   - Status chips keep words: "Draft" chip seen in both themes; other states not seen (no data).
   - Icons regenerated at every expected size: met (contact sheet looked at, 16px legible).
-  - PHP: **2035 passed**, Pint clean. JS: **901/902 passed**, oxlint 0/0, oxfmt clean, tsc clean.
+  - PHP: **2035 passed**, Pint clean. JS: **901/902 passed**, oxlint 0/0, tsc clean.
+    ~~oxfmt clean~~ WRONG - 5 files were unformatted; found and fixed in Sprint 4.
     The 1 failure (`build-feedback-payload.test.ts`, "application/json;charset=utf-8") also
     fails on the untouched upstream tree in the same container -> pre-existing, not ours.
   - Browser: dashboard light + dark (Claude in Chrome), login light + dark (headless, logged out).

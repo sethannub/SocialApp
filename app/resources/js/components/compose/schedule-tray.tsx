@@ -1,4 +1,6 @@
-import { Clock, ListChecks, Zap } from '@/components/ui/icons';
+import { useEffect } from 'react';
+
+import { Clock, ListChecks } from '@/components/ui/icons';
 import type { IconComponent } from '@/components/ui/icons';
 import type { QueueSlotState } from '@/hooks/compose/use-next-slot';
 import type { ScheduleTray as TrayState } from '@/lib/compose/composer-state';
@@ -14,7 +16,19 @@ type Props = {
     queueState: QueueSlotState;
 };
 
+/**
+ * SocialApp change: only Queue and Pick time. "Now" was removed from this switch; publishing
+ * immediately goes through the "Publish now…" confirm window in the submit bar instead.
+ */
 export function ScheduleTray({ tray, onChange, tz, queueState }: Props) {
+    // A new post opens in Pick time without a time yet: fill in the default slot so the
+    // Schedule button always has a concrete time to send.
+    useEffect(() => {
+        if (tray.mode === 'pick' && tray.pickedAt === null) {
+            onChange({ mode: 'pick', pickedAt: defaultPickedAt(tz) });
+        }
+    }, [tray.mode, tray.pickedAt, tz, onChange]);
+
     return (
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
             <div
@@ -22,12 +36,6 @@ export function ScheduleTray({ tray, onChange, tz, queueState }: Props) {
                 aria-label="When to publish"
                 className="flex w-full items-center rounded-md border border-border bg-muted p-[3px] sm:inline-flex sm:w-auto"
             >
-                <Tab
-                    icon={Zap}
-                    label="Now"
-                    active={tray.mode === 'now'}
-                    onClick={() => onChange({ mode: 'now', pickedAt: null })}
-                />
                 <Tab
                     icon={ListChecks}
                     label="Queue"

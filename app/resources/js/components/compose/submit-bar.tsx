@@ -1,11 +1,17 @@
 import { Link, router, useHttp } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 import ComposerController from '@/actions/App/Http/Controllers/Posts/ComposerController';
 import PostingScheduleController from '@/actions/App/Http/Controllers/Posts/PostingScheduleController';
 import PostScheduleController from '@/actions/App/Http/Controllers/Posts/PostScheduleController';
-import { Send } from '@/components/ui/icons';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ChevronDown, Send } from '@/components/ui/icons';
 import {
     Tooltip,
     TooltipContent,
@@ -13,6 +19,7 @@ import {
 } from '@/components/ui/tooltip';
 import { celebrate } from '@/lib/compose/celebrate';
 import type { ScheduleTray } from '@/lib/compose/composer-state';
+import type { PlatformPreview } from '@/lib/compose/platform-preview';
 import { type AccountBlock, describeReason } from '@/lib/compose/precheck';
 import {
     OPTIMISTIC_PUBLISH,
@@ -22,7 +29,14 @@ import {
 import { cn } from '@/lib/utils';
 import { index as billingRoute } from '@/routes/billing';
 import { publish, queue } from '@/routes/posts';
-import type { PlatformLimits, PlatformName, PostView } from '@/types/compose';
+import type {
+    Account,
+    PlatformLimits,
+    PlatformName,
+    PostView,
+} from '@/types/compose';
+
+import { PublishConfirmDialog } from './publish-confirm-dialog';
 
 type Props = {
     tray: ScheduleTray;
@@ -53,6 +67,14 @@ type Props = {
     blockedAccounts: AccountBlock[];
     /** Per-platform limits, for rendering block reasons. */
     limits: PlatformLimits[];
+    /** SocialApp: every selected destination account, for the Publish now confirm window. */
+    accounts: Account[];
+    /** SocialApp: builds the per-account preview shown in the confirm window. */
+    buildPreview: (account: Account) => PlatformPreview;
+    /** SocialApp: workspace scheduling timezone, for the "goes live" time. */
+    tz: string;
+    /** SocialApp: switch the tray to Pick time ("Schedule instead" in the confirm window). */
+    onScheduleInstead: () => void;
 };
 
 export function hasBlockingIssues(blocked: AccountBlock[]): boolean {
@@ -168,12 +190,18 @@ export function SubmitBar({
     onServerPost,
     blockedAccounts,
     limits,
+    accounts,
+    buildPreview,
+    tz,
+    onScheduleInstead,
 }: Props) {
     // useHttp verbs take NO inline data — the body is injected via transform()
     // at submit time so it always reflects the latest reducer state.
-    const http = useHttp<{ scheduled_at?: string | null }, { post: PostView }>(
-        {},
-    );
+    const http = useHttp<
+        { scheduled_at?: string | null; publish_ready_only?: boolean },
+        { post: PostView }
+    >({});
+    const [publishOpen, setPublishOpen] = useState(false);
     const [noSlot, setNoSlot] = useState(false);
     const [pastTime, setPastTime] = useState(false);
     const attentionBlocked = attentionHandles.length > 0;
@@ -186,12 +214,53 @@ export function SubmitBar({
     // Prefer live client blocks; fall back to the last server response.
     const blocks = blockedAccounts.length > 0 ? blockedAccounts : serverBlocked;
 
-    const submitLabel =
-        tray.mode === 'now'
-            ? 'Publish now'
-            : tray.mode === 'queue'
-              ? 'Add to queue'
-              : 'Schedule';
+    // SocialApp change: the main button only ever schedules or queues.
+    const submitLabel = tray.mode === 'queue' ? 'Add to queue' : 'Schedule';
+
+    /**
+     * SocialApp change: the only path that publishes immediately. Reached solely from the
+     * confirm window's publish button; `readyOnly` tells the server the user saw the problem
+     * accounts and chose to publish to the rest.
+     */
+    async function handlePublishNow(readyOnly: boolean) {
+        if (disabled || uploading || http.processing) {
+            return;
+        }
+
+        await onSaveDraft();
+        const id = postId ?? (await onEnsurePost());
+        if (!id) {
+            return;
+        }
+
+        const revert = onOptimisticSubmit(OPTIMISTIC_PUBLISH);
+        http.transform(() => (readyOnly ? { publish_ready_only: true } : {}));
+        await http.post(publish(id).url, {
+            onSuccess: ({ post }: { post: PostView }) => {
+                setPublishOpen(false);
+                celebrate();
+                onServerPost(post);
+                router.visit(ComposerController.show(id).url);
+            },
+            onHttpException: (response) => {
+                revert();
+                if (response.status === 402) {
+                    router.visit(billingRoute().url);
+
+                    return;
+                }
+                if (response.status === 422) {
+                    const blocked = parseServerBlocked(response.data);
+                    if (blocked.length > 0) {
+                        setServerBlocked(blocked);
+                        setShowBlocked(true);
+                    }
+                }
+                setPublishOpen(false);
+            },
+            onNetworkError: revert,
+        });
+    }
 
     async function handleSubmit() {
         if (hasBlockingIssues(blockedAccounts)) {
@@ -250,20 +319,6 @@ export function SubmitBar({
                 }
             }
         };
-
-        if (tray.mode === 'now') {
-            // Flip the chips to "Publishing" instantly; revert if the call fails.
-            const revert = onOptimisticSubmit(OPTIMISTIC_PUBLISH);
-            http.transform(() => ({}));
-            await http.post(publish(id).url, {
-                onSuccess,
-                onHttpException: (response) =>
-                    handleSubmitException(response, revert),
-                onNetworkError: revert,
-            });
-
-            return;
-        }
 
         if (tray.mode === 'queue') {
             // Flip the chips to "Queued" instantly; revert if the call fails.
@@ -382,7 +437,47 @@ export function SubmitBar({
                 ) : (
                     submitButton
                 )}
+                {/* SocialApp change: publishing immediately is tucked into this menu and
+                    always goes through the confirm window. */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger
+                        render={
+                            <TrayButton
+                                disabled={disabled || uploading}
+                                className="px-2"
+                                ariaLabel="More publishing options"
+                            />
+                        }
+                    >
+                        <ChevronDown className="size-3.5" aria-hidden="true" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-52">
+                        <DropdownMenuItem onClick={() => setPublishOpen(true)}>
+                            <span className="flex flex-col">
+                                <span>Publish now…</span>
+                                <span className="text-[11px] text-muted-foreground">
+                                    Review every account first
+                                </span>
+                            </span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
+            <PublishConfirmDialog
+                open={publishOpen}
+                onOpenChange={setPublishOpen}
+                accounts={accounts}
+                blocked={blockedAccounts}
+                limits={limits}
+                buildPreview={buildPreview}
+                tz={tz}
+                processing={http.processing}
+                onConfirm={(readyOnly) => void handlePublishNow(readyOnly)}
+                onScheduleInstead={() => {
+                    setPublishOpen(false);
+                    onScheduleInstead();
+                }}
+            />
             {noSlot && (
                 <p className="text-[12px] text-muted-foreground">
                     No open slot in your posting schedule.{' '}
@@ -422,26 +517,28 @@ export function SubmitBar({
     );
 }
 
-type TrayButtonProps = {
-    children: ReactNode;
+// SocialApp change: forwards the remaining button props (and ref) so the button can also
+// serve as a Base UI `render` target (the "More publishing options" menu trigger).
+type TrayButtonProps = Omit<ComponentProps<'button'>, 'children'> & {
+    children?: ReactNode;
     variant?: 'outline' | 'primary';
-    disabled?: boolean;
-    onClick?: () => void;
-    className?: string;
+    ariaLabel?: string;
 };
 
 function TrayButton({
     children,
     variant = 'outline',
     disabled = false,
-    onClick,
     className,
+    ariaLabel,
+    ...rest
 }: TrayButtonProps) {
     return (
         <button
             type="button"
+            {...rest}
+            aria-label={ariaLabel ?? rest['aria-label']}
             disabled={disabled}
-            onClick={onClick}
             className={cn(
                 'inline-flex h-9 items-center justify-center gap-1.5 rounded-md border px-3 text-[12.5px] font-medium transition-[background,border-color,transform,--primary-gradient-top] duration-[120ms] active:scale-[0.985] sm:h-8',
                 variant === 'outline' &&

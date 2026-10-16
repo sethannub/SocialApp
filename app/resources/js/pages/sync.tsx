@@ -122,8 +122,8 @@ export default function SyncPipelines({
                         Sync
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Post once and Y5Media Social reposts it to your other accounts
-                        automatically.
+                        Post once and Y5Media Social reposts it to your other
+                        accounts automatically.
                     </p>
                 </header>
 
@@ -275,9 +275,9 @@ export default function SyncPipelines({
                             </span>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            Pipelines only see posts you publish through
-                            Y5Media Social. Track an account to also sync — and pull
-                            in analytics for — posts you make directly on the
+                            Pipelines only see posts you publish through Y5Media
+                            Social. Track an account to also sync — and pull in
+                            analytics for — posts you make directly on the
                             platform.
                         </p>
                     </div>

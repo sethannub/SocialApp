@@ -45,6 +45,11 @@ Each changed upstream file carries a "SocialApp change:" comment at the change.
 | `.env.example*` | `APP_NAME="Y5Media Social"` | Rebrand | 3 |
 | Tests: `AppIconAssetsTest.php`, `app-sidebar.test.ts`, `sidebar-footer-card.test.ts`, `auth-brand-text.test.ts`, `engagement/index.test.ts` | Follow the rebrand; removed links asserted absent | Rebrand | 3 |
 
+| `app/resources/js/lib/compose/composer-state.ts`, `components/compose/schedule-tray.tsx` | No "Now" mode; open in Pick time | Publish now must be deliberate | 4 |
+| `app/resources/js/components/compose/submit-bar.tsx`, `composer.tsx`, new `publish-confirm-dialog.tsx` | Schedule as main button; "Publish now…" menu + confirm window; shared `previewFor` | Publish now must be deliberate | 4 |
+| `app/app/Http/Controllers/Posts/PublishController.php` | `publish_ready_only` flag | User chooses to publish to the ready accounts | 4 |
+| Tests: `PublishReadyOnlyTest.php`, `publish-confirm-dialog.test.ts`, `composer-state.test.ts`, `submit-bar.test.ts` | New / follow the change | | 4 |
+
 Merge note: a future `git subtree pull` will conflict in most of the Sprint 3 files. Resolve by
 keeping upstream's code and re-applying the name/colour change; `scripts/branding/build-icons.ps1`
 regenerates the icons.

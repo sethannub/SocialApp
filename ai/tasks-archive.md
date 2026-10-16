@@ -2,6 +2,25 @@
 
 ---
 
+## Sprint 4 - "Publish now" behind a menu and a confirm window (variant B)   [DONE 2026-10-16]
+Mode: Interface + Build. Decision: DESIGN_DECISIONS.md 2026-10-16. Closed open item "composer
+defaults to Now / Publish now is the main button / Ctrl+Enter publishes instantly".
+Acceptance criteria:
+- [x] New post opens in Pick time with a time filled in; no "Now" in the mode switch
+- [x] Ctrl+Enter schedules (or queues); it never publishes - tested (source assertion + type);
+      not pressed in the browser
+- [x] "Publish now…" in the menu opens the confirm window; nothing is sent until its button
+- [x] Window lists every selected account, ready ones and problem ones with the reason
+- [x] With problems: button says "Publish to N accounts" (N = ready); Cancel always available;
+      if none are ready, publishing is not offered (none-ready: unit test only, not seen)
+- [x] Server: `publish_ready_only` publishes the ready targets and records the others as Failed
+      with the reason; without the flag the old 422 still happens; with zero ready -> 422 - tested
+- [x] Needs-reconnect accounts are listed as problems too (not silently dropped)
+- [x] PHP + JS suites pass; lint/format/types clean
+- [x] Browser: window driven in both themes with a draft and NO connected real account
+
+---
+
 ## Sprint 3 - Rebrand to Y5Media Social (name, logo, icons, colours, links)   [DONE 2026-10-16]
 Mode: Interface
 Why: the Shoutrrr name/logo confuses the user; decided 2026-10-16 (DESIGN_DECISIONS.md, branding

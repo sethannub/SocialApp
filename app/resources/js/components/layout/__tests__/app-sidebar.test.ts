@@ -100,7 +100,6 @@ describe('sidebar footer card', () => {
     it('renders the footer card above the user menu', () => {
         expect(source).toContain('<SidebarFooterCard />');
     });
-
 });
 
 describe('settings navbar items', () => {

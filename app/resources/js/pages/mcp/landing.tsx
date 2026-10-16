@@ -26,10 +26,10 @@ export default function McpLanding() {
                         Hey there! This one's for the robots 🤖
                     </h1>
                     <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-muted-foreground sm:text-base">
-                        You've found the Y5Media Social Model Context Protocol (MCP)
-                        endpoint. It's how AI agents talk to Y5Media Social, so
-                        there's not much to see in a browser — but you're in the
-                        right place if you're setting one up.
+                        You've found the Y5Media Social Model Context Protocol
+                        (MCP) endpoint. It's how AI agents talk to Y5Media
+                        Social, so there's not much to see in a browser — but
+                        you're in the right place if you're setting one up.
                     </p>
 
                     <div className="mx-auto mt-6 max-w-md rounded-xl border bg-muted/50 p-4 text-left">

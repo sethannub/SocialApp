@@ -174,7 +174,8 @@ describe('composerReducer', () => {
         expect(state.postId).toBeNull();
         expect(state.saveState).toBe('idle');
         expect(state.activeTab).toBe('__base__');
-        expect(state.scheduleTray).toEqual({ mode: 'now', pickedAt: null });
+        // SocialApp change: posts open in Pick time, never Now.
+        expect(state.scheduleTray).toEqual({ mode: 'pick', pickedAt: null });
     });
 
     it('pre-arms the schedule tray when given an initial schedule time', () => {
@@ -688,7 +689,8 @@ describe('composerReducer', () => {
 
     it('replaces the schedule tray without touching saveState', () => {
         const state = hydrated();
-        expect(state.scheduleTray).toEqual({ mode: 'now', pickedAt: null });
+        // SocialApp change: posts open in Pick time, never Now.
+        expect(state.scheduleTray).toEqual({ mode: 'pick', pickedAt: null });
         const next = composerReducer(state, {
             type: 'setScheduleTray',
             tray: { mode: 'pick', pickedAt: '2026-06-20T15:00:00+00:00' },

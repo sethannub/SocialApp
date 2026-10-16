@@ -41,9 +41,19 @@ class PublishController extends Controller
         }
 
         $blocked = $precheck->blockingTargets($post->loadMissing(['targets.account', 'media']));
-        if ($blocked !== []) {
+
+        // SocialApp change: the confirm window can send publish_ready_only after the user has
+        // seen the problem accounts and chosen to go ahead. The dispatcher then publishes the
+        // ready targets and records each blocked one as Failed with its reason. Without the
+        // flag, or when no target is ready, the whole post is still refused.
+        $readyOnly = $request->boolean('publish_ready_only');
+        $nothingReady = count($blocked) >= $post->targets->count();
+
+        if ($blocked !== [] && (! $readyOnly || $nothingReady)) {
             return response()->json([
-                'message' => "Some accounts can't be published yet.",
+                'message' => $nothingReady && $readyOnly
+                    ? 'None of the selected accounts can take this post yet.'
+                    : "Some accounts can't be published yet.",
                 'blocked' => $blocked,
             ], 422);
         }

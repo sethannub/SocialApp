@@ -39,7 +39,7 @@ describe('shouldAllowSubmit', () => {
                 disabled: false,
                 processing: false,
                 queueDisabled: false,
-                trayMode: 'now',
+                trayMode: 'pick',
                 uploading: false,
             }),
         ).toBe(true);
@@ -48,7 +48,7 @@ describe('shouldAllowSubmit', () => {
                 disabled: true,
                 processing: false,
                 queueDisabled: false,
-                trayMode: 'now',
+                trayMode: 'pick',
                 uploading: false,
             }),
         ).toBe(false);
@@ -58,7 +58,7 @@ describe('shouldAllowSubmit', () => {
                 disabled: false,
                 processing: false,
                 queueDisabled: false,
-                trayMode: 'now',
+                trayMode: 'pick',
                 uploading: false,
             }),
         ).toBe(false);

@@ -99,12 +99,7 @@ const postsNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
-    const {
-        workspaces,
-        features,
-        instance,
-        shell,
-    } = usePage().props;
+    const { workspaces, features, instance, shell } = usePage().props;
     const unreadReplies = shell?.unreadReplies ?? 0;
     const unreadMessages = shell?.unreadMessages ?? 0;
     const { isCurrentOrParentUrl, isCurrentUrl } = useCurrentUrl();
