@@ -5,9 +5,45 @@ Anything found while fixing something else goes here immediately, with what it b
 
 ---
 
+## Sprint 4 - "Publish now" behind a menu and a confirm window (variant B)   [OPEN]
+Mode: Interface + Build. Decision: DESIGN_DECISIONS.md 2026-10-16 "Composer: Publish now lives in
+a menu (variant B); user chooses on problems". Fixes open item 1.
+Why: today one click or Ctrl+Enter publishes to every selected account with no confirm step.
+How it fits Shoutrrr (read, not guessed): `PublishDispatcher::dispatchForPost()` already
+publishes ready targets and marks precheck-blocked ones Failed with a reason;
+`PublishController::store()` rejects the whole post with 422 before reaching it.
+Files in scope (under `app/`):
+- `resources/js/lib/compose/composer-state.ts` - new posts / unscheduled drafts open in `pick`
+- `resources/js/components/compose/schedule-tray.tsx` - mode switch shows Queue / Pick time only;
+  fill `defaultPickedAt(tz)` when Pick time has no time yet
+- `resources/js/components/compose/submit-bar.tsx` - Schedule / Add to queue as the green button;
+  "▾" menu with "Publish now…"; Ctrl+Enter only ever schedules/queues
+- `resources/js/components/compose/publish-confirm-dialog.tsx` (new) - account list (ready vs
+  problem + reason), per-account preview via the existing preview components, "Goes live now"
+  with the time, focus on Cancel, "Publish to N accounts" / Cancel
+- `app/Http/Controllers/Posts/PublishController.php` - accept `publish_ready_only: true`: skip
+  the 422 and let the dispatcher mark the blocked targets Failed; still 422 if NO target is ready
+- Tests: PHP feature test for the controller; vitest for state default, shortcut, dialog logic
+Do NOT touch:
+- `PublishDispatcher`, `PublishPrecheck` rules, the scheduler, timezone handling (open item 2)
+- Schedule / Queue with problems keep Shoutrrr's current behaviour (block in the composer)
+Acceptance criteria:
+- [ ] New post opens in Pick time with a time filled in; no "Now" in the mode switch
+- [ ] Ctrl+Enter schedules (or queues); it never publishes - tested
+- [ ] "Publish now…" in the menu opens the confirm window; nothing is sent until its button
+- [ ] Window lists every selected account, ready ones and problem ones with the reason
+- [ ] With problems: button says "Publish to N accounts" (N = ready); Cancel always available;
+      if none are ready, publishing is not offered
+- [ ] Server: `publish_ready_only` publishes the ready targets and records the others as Failed
+      with the reason; without the flag the old 422 still happens; with zero ready -> 422 - tested
+- [ ] Needs-reconnect accounts are listed as problems too (not silently dropped)
+- [ ] PHP + JS suites pass; lint/format/types clean
+- [ ] Browser: window driven in both themes with a draft and NO connected real account
+      (draft-mode testing only; nothing is published)
+
+---
+
 Waiting on the user:
-- **Composer "Publish now" (item 1):** variant A / B / C, and skip-vs-block when some accounts
-  have problems. Mockup: https://claude.ai/artifact/8m24A4VtfJhA7pExNeav71
 - **Report the invitation bypass (Sprint 2) to Shoutrrr upstream?** Every Shoutrrr install has it.
   Outward-facing, so the user decides. Proposed: a private security advisory, drafted by Claude,
   sent by the user. Not a public issue.

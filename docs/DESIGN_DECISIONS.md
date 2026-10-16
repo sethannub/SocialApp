@@ -26,7 +26,18 @@ gradient was wanted). "Star on GitHub", "Sponsor", release-notes link removed.
 Status chips keep words + red/amber/green (CLAUDE.md rule 7).
 Rejected: variant B (white menu) - closer to today, weaker Y5Media identity.
 
-## Pending - Composer "Publish now"
-Mockup: C:\Codex\mockups\socialapp-composer-publish.html,
-https://claude.ai/artifact/8m24A4VtfJhA7pExNeav71 - variants A (recommended), B, C.
-Waiting on: variant choice; skip-vs-block when some accounts have problems.
+## 2026-10-16 - Composer: "Publish now" lives in a menu (variant B); user chooses on problems
+Mockup: C:\Codex\mockups\socialapp-composer-publish.html (variant B tray + A2/A3 confirm
+window), https://claude.ai/artifact/8m24A4VtfJhA7pExNeav71
+Chosen (user): variant B. Mode switch shows only Queue / Pick time; opens in Pick time; green
+button is Schedule. "Publish now…" sits in a small menu next to Schedule and always opens the
+confirm window (every account, its version, "Goes live now" in Dubai time, focus on Cancel).
+Ctrl+Enter never publishes.
+Problems (expired connection, text too long, ...): the window lists them with the reason and
+the user decides - "Publish to N ready accounts" or Cancel. No automatic block (user's words:
+"let me choose whether to publish or not if there is an error").
+Change from the mockup: skipped accounts are not kept as a separate draft; they show on the
+post as Failed with the reason (Shoutrrr's existing per-account result) and can be retried
+after the fix.
+Rejected: variant A (Now kept in the mode switch) - user preferred it out of the way;
+variant C (type PUBLISH) - friction without new information; automatic block - user's choice.
