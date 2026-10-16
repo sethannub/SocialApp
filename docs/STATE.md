@@ -34,6 +34,18 @@ Last updated: 2026-10-15. Keep under ~120 lines. History goes to `docs/state-arc
 7. **Test accounts.** Which accounts can be used for testing without anyone seeing the posts.
    (Still open - the Y5Media accounts are real, so drafts only until this is answered.)
 
+## Hosting candidate: EZEOS (read-only check 2026-10-16)
+
+- `ssh ezeos-live`. Also runs the live CRM (leads.y5media.net), reports, marketing-v2, portal.
+- Room: 8 cores, 15 GB RAM (~14 GB available), 228 GB disk free. Load avg 3-4; postgres ~60% CPU
+  at the time of the check (one snapshot, cause not checked).
+- PHP 8.4.21 on the host - Shoutrrr needs 8.5, so run it in Docker, not on host PHP.
+- Docker 26.1.3 + Compose 2.27 installed but the daemon is **stopped**, 0 containers. Starting it
+  is a change to a live server - needs the user's go-ahead.
+- Public access is via Cloudflare Tunnel (`cloudflared-leads.service` for leads.y5media.net).
+  A `social.y5media.net` would need a tunnel route + Cloudflare DNS access for y5media.net.
+- Available locally: PostgreSQL 15, MariaDB 10.11, Redis, nginx 1.24, supervisord.
+
 ## Test accounts (safe to post to during development)
 
 None recorded yet. Until there are some, development uses draft mode only.
