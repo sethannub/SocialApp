@@ -16,8 +16,7 @@ Last updated: 2026-10-16 (end of session). Keep under ~120 lines. History goes t
      upstream bug that saved "14:30+04:00" as 14:30 UTC).
 - **Nothing has ever been published.** No real social account is connected; no platform keys in
   `app/.env`.
-- Last pushed to GitHub: `625da3c` (Sprint 4). Sprint 5 (`e3244f6`, `a05c08c`) and this save are
-  committed locally, waiting for the user's `! git -C C:/Codex/SocialApp push`.
+- On GitHub: everything up to `25971a7` (end-of-session save, 2026-10-16).
 
 ## Run it locally
 
