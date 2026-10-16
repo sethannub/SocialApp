@@ -1,0 +1,139 @@
+[
+    {
+        "name": "a 318-char single paragraph threads into two X posts",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "LOCAL TEST, NOT FOR PUBLISHING. Pay only for leads you can call. Y5Media 360 finds buyers who are actively looking for what you sell, verifies every contact, and delivers them to your inbox. AED 250 per verified lead. No retainers, no ad budget, no guesswork. Book a 15-minute call and we will show you a sample batch."
+        ],
+        "expected": [
+            "LOCAL TEST, NOT FOR PUBLISHING. Pay only for leads you can call. Y5Media 360 finds buyers who are actively looking for what you sell, verifies every contact, and delivers them to your inbox. AED 250 per verified lead. No retainers, no ad budget, no guesswork. Book a 15-minute",
+            "call and we will show you a sample batch."
+        ]
+    },
+    {
+        "name": "a 399-char run of words splits on word boundaries",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"
+        ],
+        "expected": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+            "word word word word word word word word word word word word word word word word word word word word word word word word"
+        ]
+    },
+    {
+        "name": "a short paragraph then an over-limit one",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "Short intro.\nword word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"
+        ],
+        "expected": [
+            "Short intro.",
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+            "word word word word"
+        ]
+    },
+    {
+        "name": "an over-limit paragraph then a short one",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word\nTail line."
+        ],
+        "expected": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+            "word word word word",
+            "Tail line."
+        ]
+    },
+    {
+        "name": "two over-limit paragraphs",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word\nmore more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more"
+        ],
+        "expected": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+            "word word word word",
+            "more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more more",
+            "more more more more"
+        ]
+    },
+    {
+        "name": "a single 300-char word is hard-split by characters",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "expected": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "aaaaaaaaaaaaaaaaaaaa"
+        ]
+    },
+    {
+        "name": "emoji count as two UTF-16 units on X",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"
+        ],
+        "expected": [
+            "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+            "😀😀😀😀😀😀😀😀😀😀"
+        ]
+    },
+    {
+        "name": "exactly at the limit stays whole",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "expected": [
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+    },
+    {
+        "name": "one over the limit splits",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd z"
+        ],
+        "expected": [
+            "abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd abcd",
+            "z"
+        ]
+    },
+    {
+        "name": "bluesky 300 splits a long paragraph",
+        "platform": "bluesky",
+        "limit": 300,
+        "segments": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"
+        ],
+        "expected": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+            "word word word word word word word word word word"
+        ]
+    },
+    {
+        "name": "separate segments split independently",
+        "platform": "x",
+        "limit": 280,
+        "segments": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+            "Second segment."
+        ],
+        "expected": [
+            "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+            "word word word word",
+            "Second segment."
+        ]
+    }
+]

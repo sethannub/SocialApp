@@ -67,10 +67,134 @@ export function packSections(
 }
 
 /**
+ * SocialApp change: exact port of the server's `PostSplitter::chunk()` (with
+ * `splitParagraph()` and `hardSplit()`), so the preview shows the sections that
+ * will actually be published. Unlike `packSections`, a paragraph that alone
+ * exceeds `limit` is broken on word boundaries, and a single word longer than
+ * `limit` by characters — exactly as the server does. Held to the server's own
+ * output by `tests/Fixtures/post-splitter-overlimit-parity.json`.
+ */
+export function chunkSegment(
+    segment: string,
+    platform: PlatformName,
+    limit: number,
+): string[] {
+    // limit <= 0 means "unknown" on the client; the server always has a real limit.
+    if (limit <= 0 || measure(segment, platform) <= limit) {
+        return [segment];
+    }
+
+    const sections: string[] = [];
+    let current = '';
+    let hasCurrent = false;
+
+    for (const paragraph of segment.split('\n')) {
+        // A paragraph that cannot stand on its own is broken further. Flush
+        // whatever is buffered first so section order is preserved.
+        if (measure(paragraph, platform) > limit) {
+            if (hasCurrent) {
+                sections.push(current);
+                current = '';
+                hasCurrent = false;
+            }
+            sections.push(...splitParagraph(paragraph, platform, limit));
+
+            continue;
+        }
+
+        const candidate = hasCurrent ? `${current}\n${paragraph}` : paragraph;
+        if (!hasCurrent || measure(candidate, platform) <= limit) {
+            current = candidate;
+            hasCurrent = true;
+
+            continue;
+        }
+
+        sections.push(current);
+        current = paragraph;
+        hasCurrent = true;
+    }
+
+    if (hasCurrent) {
+        sections.push(current);
+    }
+
+    return sections.length === 0 ? [''] : sections;
+}
+
+/** Port of `PostSplitter::splitParagraph()`: greedy words, then hard-split. */
+function splitParagraph(
+    paragraph: string,
+    platform: PlatformName,
+    limit: number,
+): string[] {
+    const trimmed = paragraph.trim();
+    // PHP preg_split('/\s+/', '') returns [''], so an empty paragraph yields one empty word.
+    // PCRE \s (no /u flag) is ASCII whitespace only - JS \s would also match NBSP etc.
+    const words = trimmed === '' ? [''] : trimmed.split(/[ \t\n\v\f\r]+/);
+    const chunks: string[] = [];
+    let current = '';
+
+    for (const word of words) {
+        const candidate = current === '' ? word : `${current} ${word}`;
+        if (measure(candidate, platform) <= limit) {
+            current = candidate;
+
+            continue;
+        }
+        if (current !== '') {
+            chunks.push(current);
+            current = '';
+        }
+        if (measure(word, platform) > limit) {
+            chunks.push(...hardSplit(word, platform, limit));
+        } else {
+            current = word;
+        }
+    }
+
+    if (current !== '') {
+        chunks.push(current);
+    }
+
+    return chunks.length === 0 ? [''] : chunks;
+}
+
+/** Port of `PostSplitter::hardSplit()`: by code point, like PHP `mb_str_split`. */
+function hardSplit(
+    word: string,
+    platform: PlatformName,
+    limit: number,
+): string[] {
+    const pieces: string[] = [];
+    let buffer = '';
+
+    // oxlint-disable-next-line no-misused-spread -- intentional code-point split
+    for (const char of [...word]) {
+        if (measure(buffer + char, platform) > limit) {
+            pieces.push(buffer);
+            buffer = char;
+
+            continue;
+        }
+        buffer += char;
+    }
+
+    if (buffer !== '') {
+        pieces.push(buffer);
+    }
+
+    return pieces;
+}
+
+/**
  * Split the structured author segments into the section strings the composer
  * previews — the TS analogue of the server `PostSplitter::split(...).sections`.
  * Each segment is trimmed; empties are dropped (falling back to one empty
- * section), then packed per platform limit.
+ * section), then chunked per platform limit.
+ *
+ * SocialApp change: uses `chunkSegment` (server-exact) instead of `packSections`,
+ * so over-limit paragraphs are split the way they will be published.
  */
 export function previewSections(
     segments: string[],
@@ -83,8 +207,6 @@ export function previewSections(
     const use = clean.length > 0 ? clean : [''];
 
     return use.flatMap((segment) =>
-        packSections(segment.split('\n'), platform, limit).map(
-            (section) => section.text,
-        ),
+        segment === '' ? [''] : chunkSegment(segment, platform, limit),
     );
 }

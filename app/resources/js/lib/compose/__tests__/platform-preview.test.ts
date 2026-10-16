@@ -65,8 +65,12 @@ describe('buildPlatformPreview', () => {
         });
 
         expect(preview.platform).toBe('bluesky');
+        // SocialApp change: the first paragraph resolves to 38 chars (> 28), so the server
+        // PostSplitter breaks it on words - checked by running it on this exact text. The old
+        // expectation kept it whole, which is not what would be published.
         expect(preview.items.map((item) => item.text)).toEqual([
-            'Launch with @actual-person.bsky.social',
+            'Launch with',
+            '@actual-person.bsky.social',
             'Second short paragraph',
         ]);
         expect(preview.items[0]?.media).toEqual([image]);

@@ -13,8 +13,10 @@ describe('composer platform tabs', () => {
             'utf8',
         );
 
+        // SocialApp change: the chip counts the live parts (server-exact splitter),
+        // not the saved targets from page load.
         expect(source).toContain(
-            'return String(target?.sections.length ?? 1);',
+            'return String(liveSections(account).length);',
         );
         expect(source).not.toContain("account.platform === 'linkedin'");
     });

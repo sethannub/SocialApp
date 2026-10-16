@@ -4,7 +4,7 @@ import {
     replaceMentionTokens,
 } from '@/lib/compose/mentions';
 import { collapsePlatformNewlines } from '@/lib/compose/platform-newlines';
-import { measure, packSections } from '@/lib/compose/section-split';
+import { chunkSegment, measure } from '@/lib/compose/section-split';
 import { segmentRefs } from '@/lib/compose/tiptap-doc';
 import type {
     Account,
@@ -95,12 +95,10 @@ function buildSections(
         if (trimmed === '') {
             return;
         }
-        for (const section of packSections(
-            trimmed.split('\n'),
-            platform,
-            limit,
-        )) {
-            out.push({ text: section.text, source });
+        // SocialApp change: server-exact split (over-limit paragraphs are broken
+        // on words), so the preview shows the thread that will be published.
+        for (const text of chunkSegment(trimmed, platform, limit)) {
+            out.push({ text, source });
         }
     });
 

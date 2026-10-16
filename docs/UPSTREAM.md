@@ -56,6 +56,10 @@ Each changed upstream file carries a "SocialApp change:" comment at the change.
 | `app/phpunit.xml` | `APP_DISPLAY_TIMEZONE=UTC` for upstream tests | Keep upstream tests unchanged | 5 |
 | Tests: `DisplayTimezoneTest.php`, `publish-confirm-dialog.test.ts` (`timezoneLabel`) | New | | 5 |
 
+| `app/resources/js/lib/compose/section-split.ts`, `platform-preview.ts` | `chunkSegment()` = exact port of `PostSplitter::chunk`; preview uses it | Preview showed an over-limit paragraph as one post; server splits it | 6 |
+| `app/resources/js/components/compose/composer.tsx` | `liveSections()` for counter + tab chip; per-part severity | Counter read page-load targets | 6 |
+| `app/tests/Fixtures/post-splitter-overlimit-parity.json` (new), `tests/Unit/Posts/PostSplitterOverlimitParityTest.php` (new), `section-split.test.ts`, `platform-preview.test.ts`, `composer-tabs.test.ts` | Server-generated parity cases; one upstream expectation corrected | | 6 |
+
 Merge note: a future `git subtree pull` will conflict in most of the Sprint 3 files. Resolve by
 keeping upstream's code and re-applying the name/colour change; `scripts/branding/build-icons.ps1`
 regenerates the icons.

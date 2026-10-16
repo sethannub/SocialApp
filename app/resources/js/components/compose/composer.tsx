@@ -40,6 +40,7 @@ import {
 } from '@/lib/compose/mentions';
 import { buildPlatformPreview } from '@/lib/compose/platform-preview';
 import { precheckAccount, precheckDestinations } from '@/lib/compose/precheck';
+import { previewSections } from '@/lib/compose/section-split';
 import { readVideoMetadata, videoLimitsForTargets } from '@/lib/compose/video';
 import {
     defaultSettings,
@@ -813,15 +814,49 @@ export default function Composer({
         if (reasons.length > 0) {
             return 'over';
         }
-        const resolvedText = replaceMentionTokens(
-            segments.join('\n'),
-            state.mentions,
-            account.platform,
-        );
         const limit = limitForAccount(account);
-        const count = measure(resolvedText, account.platform);
+        // SocialApp change: judge each part of a thread on its own. Measuring the
+        // whole text warned "318/280" for a post that publishes as 2 short parts.
+        const count = Math.max(
+            0,
+            ...liveSections(account).map((section) =>
+                measure(section, account.platform),
+            ),
+        );
 
         return limit > 0 && count >= limit * 0.9 ? 'warn' : 'ok';
+    }
+
+    /**
+     * SocialApp change: the parts this account's version will be published as, computed
+     * live with the server-exact splitter (was: the saved targets from page load).
+     */
+    function liveSections(account: Account): string[] {
+        const segments = (
+            state.overrideByAccount[account.id] ?? state.segments
+        ).map((segment) =>
+            replaceMentionTokens(segment, state.mentions, account.platform),
+        );
+        const threadMax =
+            limits.find((l) => l.platform === account.platform)?.threadMax ??
+            null;
+        // Thread-capped platforms (LinkedIn) always post as one section.
+        if (threadMax !== null) {
+            return [segments.map((segment) => segment.trim()).join('\n')];
+        }
+        if (!(state.autoSplitByAccount[account.id] ?? true)) {
+            const clean = segments
+                .map((segment) => segment.trim())
+                .filter((segment) => segment !== '');
+
+            return clean.length > 0 ? clean : [''];
+        }
+
+        return previewSections(
+            segments,
+            account.platform,
+            limitForAccount(account),
+        );
     }
 
     function chipFor(accountId: string): string {
@@ -829,10 +864,8 @@ export default function Composer({
         if (!account) {
             return '';
         }
-        const target = post?.targets.find(
-            (t) => t.connected_account_id === accountId,
-        );
-        return String(target?.sections.length ?? 1);
+
+        return String(liveSections(account).length);
     }
 
     function syncMentions(
@@ -981,10 +1014,10 @@ export default function Composer({
         syncMentions(segments);
     }
 
-    const activeTarget = activeAccount
-        ? post?.targets.find((t) => t.connected_account_id === activeAccount.id)
-        : undefined;
-    const activeSectionTotal = activeTarget?.sections.length ?? 1;
+    // SocialApp change: live part count (see liveSections), not the page-load targets.
+    const activeSectionTotal = activeAccount
+        ? liveSections(activeAccount).length
+        : 1;
     const overrideActive =
         activeAccount !== null &&
         state.overrideByAccount[activeAccount.id] !== undefined;
