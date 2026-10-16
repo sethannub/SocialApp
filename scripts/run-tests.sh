@@ -10,4 +10,10 @@ echo "pest exit: $?" >> /out/pest.txt
 if [ -n "$PINT_FILES" ]; then
   vendor/bin/pint --test $PINT_FILES >> /out/pest.txt 2>&1
   echo "pint exit: $?" >> /out/pest.txt
+  # Larastan (Shoutrrr's level-7 static analysis) on the same files, app code only
+  STAN_FILES=$(for f in $PINT_FILES; do case "$f" in app/*|config/*) echo "$f";; esac; done)
+  if [ -n "$STAN_FILES" ]; then
+    vendor/bin/phpstan analyse --no-progress --memory-limit=2G $STAN_FILES >> /out/pest.txt 2>&1
+    echo "phpstan exit: $?" >> /out/pest.txt
+  fi
 fi

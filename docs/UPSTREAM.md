@@ -50,6 +50,12 @@ Each changed upstream file carries a "SocialApp change:" comment at the change.
 | `app/app/Http/Controllers/Posts/PublishController.php` | `publish_ready_only` flag | User chooses to publish to the ready accounts | 4 |
 | Tests: `PublishReadyOnlyTest.php`, `publish-confirm-dialog.test.ts`, `composer-state.test.ts`, `submit-bar.test.ts` | New / follow the change | | 4 |
 
+| `app/config/app.php` | New `display_timezone` (env `APP_DISPLAY_TIMEZONE`, default Asia/Dubai) | Dubai on screen, UTC in storage | 5 |
+| `app/app/Http/Middleware/HandleInertiaRequests.php`, `Posts/NextSlotController.php`, `Posts/PostingScheduleController.php`, `Settings/WorkspaceSettingsController.php` | `'UTC'` fallbacks -> `config('app.display_timezone')` | Same | 5 |
+| `app/app/Models/Post.php` | `scheduledAt()` setter stores any incoming time as UTC | Upstream dropped the offset: 14:30+04:00 saved as 14:30 UTC | 5 |
+| `app/phpunit.xml` | `APP_DISPLAY_TIMEZONE=UTC` for upstream tests | Keep upstream tests unchanged | 5 |
+| Tests: `DisplayTimezoneTest.php`, `publish-confirm-dialog.test.ts` (`timezoneLabel`) | New | | 5 |
+
 Merge note: a future `git subtree pull` will conflict in most of the Sprint 3 files. Resolve by
 keeping upstream's code and re-applying the name/colour change; `scripts/branding/build-icons.ps1`
 regenerates the icons.

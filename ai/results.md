@@ -14,6 +14,44 @@ Entry shape:
 
 ---
 
+## 2026-10-16 - Sprint 5: Dubai time on screen, UTC in storage
+- Mode: Build. Closed open item "times shown in UTC".
+- What changed (marked "SocialApp change:"):
+  - `config/app.php`: `display_timezone` => env('APP_DISPLAY_TIMEZONE', 'Asia/Dubai'). Storage
+    `timezone` stays UTC.
+  - The hard-coded `'UTC'` fallbacks -> `config('app.display_timezone')`: `HandleInertiaRequests`,
+    `NextSlotController`, `Posts/PostingScheduleController` (fallback + new schedule default),
+    `Settings/WorkspaceSettingsController`.
+  - **`app/Models/Post.php`: `scheduledAt()` setter converts every incoming time to UTC** (found
+    in this sprint, see below).
+  - `publish-confirm-dialog.tsx`: `timezoneLabel()` -> "Dubai time".
+  - `phpunit.xml`: `APP_DISPLAY_TIMEZONE=UTC` so upstream tests keep their UTC expectations.
+  - `.env.example*`: documented `APP_DISPLAY_TIMEZONE`.
+  - Tests: `tests/Feature/DisplayTimezoneTest.php` (5), `timezoneLabel` vitest.
+  - `scripts/run-tests.sh`: Larastan (phpstan) now runs on the `$PINT_FILES` app/config files.
+- Acceptance criteria:
+  - No posting schedule -> Asia/Dubai shared: met (test + seen: settings shows Asia/Dubai, calendar
+    label Asia/Dubai).
+  - A chosen timezone is kept: met (test, Europe/London).
+  - Stored in UTC: met (test: 14:30+04:00 and 10:30Z both stored as 10:30 UTC).
+  - Browser: post list "Today 12:00 PM" (was "8:00 AM"), picker "Oct 16, 4:00 PM", calendar
+    "Asia/Dubai", Publish now window "Fri 16 Oct, 15:36 Dubai time": met.
+  - PHP **2044 passed**, Pint exit 0, **phpstan exit 0** (also over the Sprint 2 and 4 PHP files);
+    JS **909/910** (1 = known baseline), oxlint 0/0, oxfmt exit 0, tsc exit 0.
+- Review findings, most severe first:
+  - **Upstream storage bug, fixed:** `posts.scheduled_at` dropped the offset of an incoming
+    string - "14:30+04:00" was stored as 14:30 UTC, four hours late. Proven by the new test
+    failing before the fix. The app's own screens always send UTC "Z" (picker, calendar drag), so
+    it only bit API / MCP clients - but it would have bitten as soon as anything sent Dubai
+    offsets. Fixed at one point (the model setter) instead of in each of the 3 callers.
+  - My first oxfmt run flagged the dialog file; the explicit exit code from Sprint 4 caught it.
+  - The settings screen's Save stays disabled while it shows the fallback, so the workspace has no
+    stored posting timezone; it follows `APP_DISPLAY_TIMEZONE`. Fine for one workspace.
+- Test data: 1 fake credential-less account + 1 "LOCAL TEST" draft, window opened and cancelled,
+  nothing published (draft, 0 jobs), both removed.
+- Could NOT see: week view of the calendar; a post scheduled through the API.
+- Commit: see git log ("Sprint 5: ...")
+
 ## 2026-10-16 - Sprint 4: "Publish now" behind a menu and a confirm window (variant B)
 - Mode: Interface + Build. Decision: DESIGN_DECISIONS.md 2026-10-16 (variant B, user chooses on
   problems). Mockup: https://claude.ai/artifact/8m24A4VtfJhA7pExNeav71

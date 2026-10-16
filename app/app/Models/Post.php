@@ -9,7 +9,9 @@ use App\Enums\PostOrigin;
 use App\Enums\PostStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\PostFactory;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -80,6 +82,27 @@ class Post extends Model
             'published_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
+    }
+
+    /**
+     * SocialApp change: the one conversion point for schedule times. Whatever arrives (the
+     * composer's UTC "Z" string, an API / MCP client's "+04:00" Dubai time, a Carbon) is stored
+     * as UTC. Without this, Laravel drops a string's offset and a 14:30 Dubai post is saved as
+     * 14:30 UTC - four hours late. Reading still goes through the 'datetime' cast.
+     *
+     * @return Attribute<never, mixed>
+     */
+    protected function scheduledAt(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value): ?string => $value === null || $value === ''
+                ? null
+                : $this->fromDateTime(
+                    ($value instanceof DateTimeInterface
+                        ? CarbonImmutable::instance($value)
+                        : CarbonImmutable::parse((string) $value))->utc(),
+                ),
+        );
     }
 
     /**

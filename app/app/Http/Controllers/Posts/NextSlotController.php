@@ -40,7 +40,8 @@ class NextSlotController extends Controller
                 fn ($slot): string => $slot->toIso8601String(),
                 $slots,
             ),
-            'timezone' => $schedule !== null ? $schedule->timezone : 'UTC',
+            // SocialApp change: fall back to the display timezone, not UTC.
+            'timezone' => $schedule !== null ? $schedule->timezone : config('app.display_timezone'),
         ]);
     }
 }

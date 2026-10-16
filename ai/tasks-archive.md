@@ -2,6 +2,43 @@
 
 ---
 
+## Sprint 5 - Dubai time on screen (UTC stays in storage)   [DONE 2026-10-16]
+Mode: Build. Fixes open item 1. CLAUDE.md standing rule 6: "UTC in storage, Asia/Dubai on
+screen. One conversion point. Schedules are entered in Dubai time."
+Why: every time on screen reads UTC (draft at ~12:00 Dubai showed "8:00 AM"; the Publish now
+window says "(UTC)").
+Cause (read, not guessed): screens use the workspace's posting-schedule timezone
+(`HandleInertiaRequests` shares `postingSchedule->timezone ?? 'UTC'`). There is no posting
+schedule yet, and five places hard-code the `'UTC'` fallback: `HandleInertiaRequests.php:240`,
+`NextSlotController.php:43`, `Posts/PostingScheduleController.php:32`,
+`Settings/WorkspaceSettingsController.php:34`, and the schedule `firstOrCreate` /
+`updateOrCreate` defaults. Storage is already UTC (`config/app.php` 'timezone' => 'UTC').
+Files in scope (under `app/`):
+- `config/app.php` - new `display_timezone` => env('APP_DISPLAY_TIMEZONE', 'Asia/Dubai'): the
+  one place the screen timezone comes from when a workspace hasn't chosen one
+- the five fallbacks above -> `config('app.display_timezone')`; a new posting schedule starts in it
+- `phpunit.xml` - `APP_DISPLAY_TIMEZONE=UTC` so upstream's existing tests keep their UTC
+  expectations; our own test sets Asia/Dubai explicitly
+- `resources/js/components/compose/publish-confirm-dialog.tsx` - "Dubai time" label instead of
+  the raw "(Asia/Dubai)"
+- `.env.example*` - document APP_DISPLAY_TIMEZONE
+- New test: `tests/Feature/DisplayTimezoneTest.php`
+- Local data: set this workspace's posting timezone to Asia/Dubai through Workspace -> Overview
+  (drives Shoutrrr's own screen)
+Do NOT touch:
+- Storage: `config/app.php` 'timezone' stays UTC; no migration; no change to how times are saved
+- The scheduler, the queue-slot maths (`NextSlotResolver`) beyond the fallback value
+Acceptance criteria:
+- [x] With no posting schedule, the app shares Asia/Dubai as the scheduling timezone - tested
+- [x] A workspace that picked another timezone keeps it (the fallback never overrides a choice)
+- [x] Times are still stored in UTC: a post scheduled for 14:30 Dubai is saved as 10:30Z - tested
+- [x] Browser: post list, time picker, calendar and the Publish now window show Dubai time
+- [x] PHP + JS suites pass; Pint / oxlint / oxfmt / tsc clean (explicit exit codes)
+
+Also fixed in Sprint 5 (found while testing): Post::scheduledAt setter stores any incoming time as UTC.
+
+---
+
 ## Sprint 4 - "Publish now" behind a menu and a confirm window (variant B)   [DONE 2026-10-16]
 Mode: Interface + Build. Decision: DESIGN_DECISIONS.md 2026-10-16. Closed open item "composer
 defaults to Now / Publish now is the main button / Ctrl+Enter publishes instantly".

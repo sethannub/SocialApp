@@ -97,6 +97,13 @@ return [
     'timezone' => 'UTC',
 
     /*
+    | SocialApp change: the timezone times are SHOWN and ENTERED in when a workspace has not
+    | picked its own posting timezone. Storage stays UTC ('timezone' above). One conversion
+    | point (CLAUDE.md standing rule 6).
+    */
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Asia/Dubai'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------

@@ -109,6 +109,15 @@ export function planPublish(
     };
 }
 
+/** "Asia/Dubai" -> "Dubai time"; anything else keeps its IANA name in brackets. */
+export function timezoneLabel(tz: string): string {
+    if (tz === 'Asia/Dubai') {
+        return 'Dubai time';
+    }
+
+    return `(${tz})`;
+}
+
 const STATE_CHIP: Record<
     PublishTargetRow['state'],
     { label: string; className: string }
@@ -285,9 +294,9 @@ export function PublishConfirmDialog({
                 {plan.readyCount > 0 && (
                     <p className="rounded-md bg-amber-500/10 px-3 py-2 text-[12.5px] text-amber-800 dark:text-amber-300">
                         <span className="font-semibold">Goes live now</span> on{' '}
-                        {readyPlatforms.join(', ')} · {goesLiveAt} ({tz}). It
-                        can be deleted afterwards, but people may already have
-                        seen it.
+                        {readyPlatforms.join(', ')} · {goesLiveAt}{' '}
+                        {timezoneLabel(tz)}. It can be deleted afterwards, but
+                        people may already have seen it.
                     </p>
                 )}
 

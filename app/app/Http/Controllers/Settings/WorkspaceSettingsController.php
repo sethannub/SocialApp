@@ -31,7 +31,8 @@ class WorkspaceSettingsController extends Controller
         abort_if($workspace === null, 404);
 
         $schedule = PostingSchedule::query()->where('workspace_id', $workspace->id)->first();
-        $timezone = $schedule !== null ? $schedule->timezone : 'UTC';
+        // SocialApp change: fall back to the display timezone, not UTC.
+        $timezone = $schedule !== null ? $schedule->timezone : config('app.display_timezone');
 
         $hasAnotherWorkspace = $user->workspaceMemberships()
             ->where('workspace_id', '!=', $workspace->id)

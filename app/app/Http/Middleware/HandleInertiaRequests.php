@@ -237,7 +237,8 @@ class HandleInertiaRequests extends Middleware
                     'role' => $membership->role->value,
                     'logo' => $membership->workspace->logo,
                     'permissions' => $membership->permissions,
-                    'timezone' => $membership->workspace->postingSchedule->timezone ?? 'UTC',
+                    // SocialApp change: fall back to the display timezone, not UTC.
+                    'timezone' => $membership->workspace->postingSchedule->timezone ?? config('app.display_timezone'),
                 ];
             }
         }

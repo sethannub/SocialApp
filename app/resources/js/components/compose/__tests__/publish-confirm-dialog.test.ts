@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import type { AccountBlock } from '@/lib/compose/precheck';
 import type { Account } from '@/types/compose';
 
-import { planPublish } from '../publish-confirm-dialog';
+import { planPublish, timezoneLabel } from '../publish-confirm-dialog';
 
 // SocialApp change: tests for the "Publish now" confirm window (variant B).
 
@@ -86,6 +86,13 @@ describe('planPublish', () => {
 
         expect(plan.readyCount).toBe(0);
         expect(plan.publishLabel).toBeNull();
+    });
+});
+
+describe('timezoneLabel', () => {
+    it('names Dubai in plain words and keeps other zones visible', () => {
+        expect(timezoneLabel('Asia/Dubai')).toBe('Dubai time');
+        expect(timezoneLabel('Europe/London')).toBe('(Europe/London)');
     });
 });
 

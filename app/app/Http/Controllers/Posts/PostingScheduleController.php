@@ -29,7 +29,8 @@ class PostingScheduleController extends Controller
             ->with('slots')
             ->first();
 
-        $timezone = $schedule === null ? 'UTC' : $schedule->timezone;
+        // SocialApp change: fall back to the display timezone, not UTC.
+        $timezone = $schedule === null ? config('app.display_timezone') : $schedule->timezone;
 
         return Inertia::render('queue/index', [
             'timezone' => $timezone,
@@ -57,8 +58,10 @@ class PostingScheduleController extends Controller
         $slots = $data['slots'] ?? [];
 
         DB::transaction(function () use ($workspace, $slots): void {
+            // SocialApp change: a new schedule starts in the display timezone, not the column's UTC default.
             $schedule = PostingSchedule::query()->firstOrCreate(
                 ['workspace_id' => $workspace->id],
+                ['timezone' => config('app.display_timezone')],
             );
 
             $schedule->slots()->delete();

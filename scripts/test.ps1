@@ -22,4 +22,4 @@ docker run --rm --entrypoint sh `
     -e "PINT_FILES=$env:PINT_FILES" `
     -e "PEST_FILTER=$env:PEST_FILTER" `
     shoutrrr:dev /out/run-tests.sh
-Get-Content (Join-Path $out 'pest.txt') | ForEach-Object { $_ -replace '\x1b\[[0-9;]*m', '' } | Select-String -Pattern 'FAILED|Tests:|pest exit|pint exit|FAIL |✓|⨯' | ForEach-Object { $_.Line.Trim() }
+Get-Content (Join-Path $out 'pest.txt') | ForEach-Object { $_ -replace '\x1b\[[0-9;]*m', '' } | Select-String -Pattern 'FAILED|Tests:|pest exit|pint exit|phpstan exit|\[ERROR\]|------ |  Line |FAIL |✓|⨯' | ForEach-Object { $_.Line.Trim() }
