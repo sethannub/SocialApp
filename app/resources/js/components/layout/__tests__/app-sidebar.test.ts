@@ -70,8 +70,10 @@ describe('sidebar page cache policy', () => {
     });
 });
 
+// SocialApp change: the Shoutrrr version / release-notes / update badge was removed
+// from the sidebar header (rebrand to Y5Media Social), so these assert it stays gone.
 describe('sidebar app version link', () => {
-    it('renders a version badge that opens the current GitHub release', () => {
+    it('does not link to the Shoutrrr GitHub releases', () => {
         const source = readFileSync(
             resolve(
                 process.cwd(),
@@ -80,14 +82,13 @@ describe('sidebar app version link', () => {
             'utf8',
         );
 
-        expect(source).toContain('githubReleaseUrl');
-        expect(source).toContain('appVersion');
-        expect(source).toContain('target="_blank"');
-        expect(source).toContain('rel="noopener noreferrer"');
+        expect(source).not.toContain('githubReleaseUrl');
+        expect(source).not.toContain('latestReleaseUrl');
+        expect(source).not.toContain('Shoutrrr');
     });
 });
 
-describe('sidebar footer card + update dot', () => {
+describe('sidebar footer card', () => {
     const source = readFileSync(
         resolve(
             process.cwd(),
@@ -100,30 +101,6 @@ describe('sidebar footer card + update dot', () => {
         expect(source).toContain('<SidebarFooterCard />');
     });
 
-    it('shows a red update dot on the version badge', () => {
-        expect(source).toContain('updateAvailable');
-        expect(source).toContain('bg-red-500');
-    });
-});
-
-describe('version badge update tooltip', () => {
-    const source = readFileSync(
-        resolve(
-            process.cwd(),
-            'resources/js/components/layout/app-sidebar.tsx',
-        ),
-        'utf8',
-    );
-
-    it('links the badge to the new release when an update is available', () => {
-        expect(source).toContain('latestReleaseUrl');
-    });
-
-    it('names the available version in a tooltip', () => {
-        expect(source).toContain('TooltipContent');
-        expect(source).toContain('Update available');
-        expect(source).toContain('latestVersion');
-    });
 });
 
 describe('settings navbar items', () => {

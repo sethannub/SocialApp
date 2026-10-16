@@ -49,10 +49,13 @@ it('uses the current source artwork bounds for the app icon', function (): void 
 
     imagedestroy($image);
 
-    expect($left)->toBe(51);
-    expect($right)->toBe(460);
-    expect($top)->toBe(50);
-    expect($bottom)->toBe(462);
+    // SocialApp change: the Y5 icon is a full rounded tile (scripts/branding/build-icons.ps1),
+    // so its artwork reaches every edge; only the rounded corners are transparent.
+    expect($left)->toBe(0);
+    expect($right)->toBe(511);
+    expect($top)->toBe(0);
+    expect($bottom)->toBe(511);
+    expect((imagecolorat(imagecreatefrompng(public_path('shoutrrr.png')), 0, 0) & 0x7F000000) >> 24)->toBe(127);
 });
 
 it('references the generated icons from Laravel HTML entry points', function (): void {
@@ -76,8 +79,8 @@ it('publishes a web app manifest using the generated icons', function (): void {
     $manifest = json_decode(file_get_contents(public_path('site.webmanifest')), true, flags: JSON_THROW_ON_ERROR);
 
     expect($manifest)
-        ->toHaveKey('name', 'shoutrrr')
-        ->toHaveKey('theme_color', '#101010');
+        ->toHaveKey('name', 'Y5Media Social')
+        ->toHaveKey('theme_color', '#0b261b');
 
     expect(collect($manifest['icons'])->pluck('src')->all())->toEqual([
         '/android-chrome-192x192.png',
@@ -90,9 +93,10 @@ it('publishes a web app manifest using the generated icons', function (): void {
 it('renders the app logo as an inline svg that inherits the current color', function (): void {
     $component = file_get_contents(resource_path('js/components/layout/app-logo-icon.tsx'));
 
+    // SocialApp change: the Y5 mark is a filled shape, not a stroked megaphone.
     expect($component)
         ->toContain('<svg')
-        ->toContain('stroke="currentColor"')
+        ->toContain('fill="currentColor"')
         ->not->toContain('/shoutrrr.png');
 });
 

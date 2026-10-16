@@ -14,6 +14,39 @@ Entry shape:
 
 ---
 
+## 2026-10-16 - Sprint 3: rebrand to Y5Media Social
+- Mode: Interface. Decision + mockup: DESIGN_DECISIONS.md "Branding: Y5Media palette, forest-green
+  menu (variant A)", https://claude.ai/artifact/HzQGeog8wXPSfLcyp6XFh8 v2.
+- What changed: see `docs/UPSTREAM.md` Sprint 3 rows. New: `scripts/branding/` (icon master page,
+  `make-icons.php`, `build-icons.ps1`), `scripts/run-js-tests.sh` (vitest + oxlint + oxfmt + tsc
+  in a throwaway container, with Wayfinder helpers generated). `scripts/test.ps1` now also mounts
+  `resources/`. Local data: workspace renamed to "Y5Media".
+- Acceptance criteria:
+  - No "Shoutrrr" visible on login, dashboard, menu, posts: met (seen in browser). Remaining
+    occurrences are identifiers, billing-only text (SELF_HOSTED=false only) and the MCP server
+    name seen by AI clients - all listed as out of scope in the plan.
+  - Forest menu, Y5 mark, gradient buttons, Y5Media palette, both themes: met (seen).
+  - Status chips keep words: "Draft" chip seen in both themes; other states not seen (no data).
+  - Icons regenerated at every expected size: met (contact sheet looked at, 16px legible).
+  - PHP: **2035 passed**, Pint clean. JS: **901/902 passed**, oxlint 0/0, oxfmt clean, tsc clean.
+    The 1 failure (`build-feedback-payload.test.ts`, "application/json;charset=utf-8") also
+    fails on the untouched upstream tree in the same container -> pre-existing, not ours.
+  - Browser: dashboard light + dark (Claude in Chrome), login light + dark (headless, logged out).
+- Review findings, most severe first:
+  - Menu logo rendered at 16px: SidebarMenuButton forces `[&_svg]:size-4`. **Fixed** with
+    `h-auto! w-8!` on the logo only.
+  - Lime logo on white (login, error, MCP pages) would be near-invisible. **Fixed**: new
+    `--brand-mark` token (green ink #2F6B00 light, lime dark).
+  - My own comment contained "Star on GitHub" and tripped the absence test. **Fixed** (reworded).
+  - Changing APP_NAME changes the session cookie / cache prefix (slug of APP_NAME): everyone is
+    logged out once after deploy. Accepted, noted for the server checklist.
+  - Differences from the mockup, not fixed (small, ask user): login keeps Shoutrrr's centred
+    layout (mockup showed a split forest panel); footer text still "Registration is disabled for
+    this instance." (mockup: "New accounts by invitation only.").
+- Could NOT see: the welcome box (only shows on first login), emails (no mail sent; MAIL=log),
+  phone home-screen icon on a real phone, Failed / Needs-reconnect chips (no accounts connected).
+- Commit: see git log ("Sprint 3: ...")
+
 ## 2026-10-16 - Sprint 2: a made-up invitation code must not create an account
 - Mode: Build (security fix in upstream code)
 - Correction first: Sprint 1's item 1 ("anyone can create an account") was wrong. Shoutrrr turns

@@ -52,7 +52,7 @@ return [
     ],
 
     'ui' => [
-        'title' => 'Shoutrrr API',
+        'title' => 'Y5Media Social API',
     ],
 
     'renderer' => 'elements',

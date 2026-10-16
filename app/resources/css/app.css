@@ -73,31 +73,38 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* SocialApp change: colour for the Y5 mark on page surfaces (not the menu). */
+    --color-brand-mark: var(--brand-mark);
 }
 
+/* SocialApp change: Y5Media palette (Y5MediaSite/src/styles/tokens.css) replaces Shoutrrr's
+   neutral greys and single lime. Decision: docs/DESIGN_DECISIONS.md, 2026-10-16, variant A. */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.841 0.238 128.85);
-    --primary-foreground: oklch(0.405 0.101 131.063);
-    --secondary: oklch(0.967 0.001 286.375);
-    --secondary-foreground: oklch(0.21 0.006 285.885);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --background: #f4f7f3;
+    --foreground: #14211a;
+    --card: #ffffff;
+    --card-foreground: #14211a;
+    --popover: #ffffff;
+    --popover-foreground: #14211a;
+    --primary: #a6e72a;
+    --primary-foreground: #0b1a10;
+    --brand-green: #75b630;
+    --brand-mark: #2f6b00;
+    --secondary: #e8eee9;
+    --secondary-foreground: #14211a;
+    --muted: #e8eee9;
+    --muted-foreground: #5e6e64;
+    --accent: #ecf6e2;
+    --accent-foreground: #14211a;
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
     --success: oklch(0.55 0.14 155);
     --warning: oklch(0.6 0.15 70);
     --info: oklch(0.55 0.16 255);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    --border: #dce4de;
+    --input: #dce4de;
+    --ring: #75b630;
     --chart-1: oklch(0.837 0.128 66.29);
     --chart-2: oklch(0.705 0.213 47.604);
     --chart-3: oklch(0.646 0.222 41.116);
@@ -115,14 +122,16 @@
        Declared only here: .dark redefines --primary on the same element (<html>),
        so these re-resolve per theme on their own and must NOT be copied into
        .dark. */
-    --primary-gradient-from: color-mix(in oklch, var(--primary), white 30%);
-    --primary-gradient-to: var(--primary);
+    /* SocialApp change: Y5Media's lime -> green wash (#A6E72A -> #75B630) instead of a
+       lighter-to-brand wash of one hue. */
+    --primary-gradient-from: var(--primary);
+    --primary-gradient-to: var(--brand-green);
     --primary-gradient-highlight: color-mix(
         in oklch,
         var(--primary),
-        white 45%
+        white 35%
     );
-    --primary-gradient-edge: color-mix(in oklch, var(--primary), black 12%);
+    --primary-gradient-edge: color-mix(in oklch, var(--brand-green), black 15%);
     /* Categorical account-line palette — distinct hues assigned in fixed order,
        validated colorblind-safe for the light card surface (dataviz method). */
     --account-1: #2a78d6;
@@ -134,39 +143,42 @@
     --account-7: #4a3aa7;
     --account-8: #e34948;
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.648 0.2 131.684);
-    --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    /* Forest-green menu in both themes (Y5Media dark sections). */
+    --sidebar: #0b261b;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #a6e72a;
+    --sidebar-primary-foreground: #0b1a10;
+    --sidebar-accent: #143726;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgb(255 255 255 / 12%);
+    --sidebar-ring: #a6e72a;
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.768 0.233 130.85);
-    --primary-foreground: oklch(0.405 0.101 131.063);
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --background: #08160f;
+    --foreground: #eef5ea;
+    --card: #0f2219;
+    --card-foreground: #eef5ea;
+    --popover: #0f2219;
+    --popover-foreground: #eef5ea;
+    --primary: #a6e72a;
+    --primary-foreground: #0b1a10;
+    --brand-green: #75b630;
+    --brand-mark: #a6e72a;
+    --secondary: #16291f;
+    --secondary-foreground: #eef5ea;
+    --muted: #16291f;
+    --muted-foreground: #9fb3a5;
+    --accent: #1a3324;
+    --accent-foreground: #eef5ea;
     --destructive: oklch(0.704 0.191 22.216);
     --destructive-foreground: oklch(0.637 0.237 25.331);
     --success: oklch(0.75 0.15 155);
     --warning: oklch(0.78 0.14 70);
     --info: oklch(0.72 0.14 255);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    --border: #20352a;
+    --input: #26402f;
+    --ring: #75b630;
     --chart-1: oklch(0.837 0.128 66.29);
     --chart-2: oklch(0.705 0.213 47.604);
     --chart-3: oklch(0.646 0.222 41.116);
@@ -181,14 +193,14 @@
     --account-6: #008300;
     --account-7: #9085e9;
     --account-8: #e66767;
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.768 0.233 130.85);
-    --sidebar-primary-foreground: oklch(0.274 0.072 132.109);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --sidebar: #061209;
+    --sidebar-foreground: #eef5ea;
+    --sidebar-primary: #a6e72a;
+    --sidebar-primary-foreground: #0b1a10;
+    --sidebar-accent: #12291c;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgb(255 255 255 / 9%);
+    --sidebar-ring: #a6e72a;
 }
 
 /* Registered so hover can animate. A gradient in background-image is not an

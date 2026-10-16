@@ -10,7 +10,7 @@
     <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
     <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#101010">
+    <meta name="theme-color" content="#0b261b">
 </head>
 <body>
     <h1>Authorize {{ $client->name }}</h1>

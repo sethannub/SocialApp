@@ -15,7 +15,7 @@ export default function McpLanding() {
                 <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,color-mix(in_oklch,var(--primary)_28%,transparent),transparent_34rem),radial-gradient(circle_at_bottom_right,color-mix(in_oklch,var(--primary)_18%,transparent),transparent_28rem)]" />
                 <div className="w-full max-w-xl rounded-[2rem] border bg-card/90 p-8 text-center shadow-2xl shadow-primary/5 backdrop-blur sm:p-10">
                     <div className="mx-auto mb-8 flex size-14 items-center justify-center rounded-2xl border bg-background shadow-sm">
-                        <AppLogoIcon className="size-8 text-primary" />
+                        <AppLogoIcon className="h-8 w-auto text-brand-mark" />
                     </div>
 
                     <p className="inline-flex items-center gap-1.5 text-sm font-semibold tracking-[0.35em] text-primary uppercase">
@@ -26,8 +26,8 @@ export default function McpLanding() {
                         Hey there! This one's for the robots 🤖
                     </h1>
                     <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-muted-foreground sm:text-base">
-                        You've found the Shoutrrr Model Context Protocol (MCP)
-                        endpoint. It's how AI agents talk to Shoutrrr, so
+                        You've found the Y5Media Social Model Context Protocol (MCP)
+                        endpoint. It's how AI agents talk to Y5Media Social, so
                         there's not much to see in a browser — but you're in the
                         right place if you're setting one up.
                     </p>
@@ -61,7 +61,7 @@ export default function McpLanding() {
                             render={<Link href={home().url} />}
                         >
                             <Home />
-                            Back to Shoutrrr
+                            Back to Y5Media Social
                         </Button>
                     </div>
                 </div>

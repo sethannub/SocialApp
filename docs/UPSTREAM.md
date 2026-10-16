@@ -36,3 +36,15 @@ Each changed upstream file carries a "SocialApp change:" comment at the change.
 |---|---|---|---|
 | `app/app/Support/InstanceSettings.php` | `registrationsAllowed()` only lets an invitation token bypass closed registration if it is a real, pending, unexpired invitation (new `invitationTokenIsValid()`) | Upstream accepted any non-empty string, so `/register?invitation=anything` created an account | 2 |
 | `app/tests/Feature/Auth/RegistrationTest.php` | 5 tests: made-up / expired / accepted tokens refused, valid invite works, register screen redirects | Cover the fix above | 2 |
+| `app/resources/css/app.css` | Y5Media palette in `:root` / `.dark` / sidebar tokens; lime->green primary gradient; new `--brand-mark` token | Rebrand | 3 |
+| `app/resources/js/components/layout/app-logo-icon.tsx`, `app-logo.tsx` | Y5 mark (filled) replaces the megaphone; "Y5Media Social" | Rebrand | 3 |
+| `app/resources/js/layouts/auth/auth-{simple,card,split}-layout.tsx`, `pages/error.tsx`, `pages/mcp/landing.tsx`, `components/onboarding/welcome-modal.tsx` | Logo sizing for the wide mark, `text-brand-mark` colour | Rebrand | 3 |
+| `app/resources/js/components/layout/sidebar-footer-card.tsx`, `app-sidebar.tsx` | Removed "Star on GitHub"/"Sponsor" links and the version/release-notes badge | Rebrand | 3 |
+| Visible text in `pages/auth/{login,register}.tsx`, `pages/{engagement/index,error,sync,share/show,settings/workspace/api-keys,mcp/landing}.tsx`, `components/settings/create-sync-pipeline-dialog.tsx`, `views/vendor/mail/html/header.blade.php`, `app/Http/Controllers/Settings/NativeTrackingController.php`, `config/{app,scramble}.php`, `resources/js/app.tsx` | "Shoutrrr" -> "Y5Media Social" (whole word only; identifiers untouched) | Rebrand | 3 |
+| `app/public/*` icons, `favicon.svg`, `site.webmanifest`, `views/app.blade.php`, `views/oauth/authorize.blade.php` | Regenerated with `scripts/branding/build-icons.ps1`; theme colour #0b261b | Rebrand | 3 |
+| `.env.example*` | `APP_NAME="Y5Media Social"` | Rebrand | 3 |
+| Tests: `AppIconAssetsTest.php`, `app-sidebar.test.ts`, `sidebar-footer-card.test.ts`, `auth-brand-text.test.ts`, `engagement/index.test.ts` | Follow the rebrand; removed links asserted absent | Rebrand | 3 |
+
+Merge note: a future `git subtree pull` will conflict in most of the Sprint 3 files. Resolve by
+keeping upstream's code and re-applying the name/colour change; `scripts/branding/build-icons.ps1`
+regenerates the icons.

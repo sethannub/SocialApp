@@ -1,12 +1,12 @@
 {
-  "name": "shoutrrr",
-  "short_name": "shoutrrr",
-  "description": "Self-hosted social media scheduler.",
+  "name": "Y5Media Social",
+  "short_name": "Y5Media Social",
+  "description": "Post to Facebook, Instagram, LinkedIn, Threads and X from one place.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#101010",
-  "theme_color": "#101010",
+  "background_color": "#0b261b",
+  "theme_color": "#0b261b",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

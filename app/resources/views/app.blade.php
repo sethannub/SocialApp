@@ -31,11 +31,11 @@
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
         <style>
             html {
-                background-color: oklch(1 0 0);
+                background-color: #f4f7f3;
             }
 
             html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: #08160f;
             }
         </style>
 
@@ -46,7 +46,7 @@
         <link rel="icon" href="/favicon-48x48.png" type="image/png" sizes="48x48">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
         <link rel="manifest" href="/site.webmanifest">
-        <meta name="theme-color" content="#101010">
+        <meta name="theme-color" content="#0b261b">
 
         @fonts
 

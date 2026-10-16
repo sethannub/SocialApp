@@ -536,7 +536,7 @@ function RightPane({
                                 <DropdownMenuItem
                                     render={<Link href={postInShoutrrrUrl} />}
                                 >
-                                    Open in Shoutrrr
+                                    Open in Y5Media Social
                                 </DropdownMenuItem>
                             ) : null}
                         </DropdownMenuContent>

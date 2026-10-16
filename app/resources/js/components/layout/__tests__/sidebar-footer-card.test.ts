@@ -42,9 +42,10 @@ describe('sidebar footer card variants', () => {
         expect(source).not.toContain('Active subscription');
     });
 
-    it('links the community card to the repo and sponsor urls', () => {
-        expect(source).toContain('community.repoUrl');
-        expect(source).toContain('community.sponsorUrl');
-        expect(source).toContain('Star on GitHub');
+    // SocialApp change: the Shoutrrr "Star on GitHub" / "Sponsor" card was removed.
+    it('does not link to the Shoutrrr repo or sponsor page', () => {
+        expect(source).not.toContain('community.repoUrl');
+        expect(source).not.toContain('community.sponsorUrl');
+        expect(source).not.toContain('Star on GitHub');
     });
 });

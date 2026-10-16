@@ -2,6 +2,52 @@
 
 ---
 
+## Sprint 3 - Rebrand to Y5Media Social (name, logo, icons, colours, links)   [DONE 2026-10-16]
+Mode: Interface
+Why: the Shoutrrr name/logo confuses the user; decided 2026-10-16 (DESIGN_DECISIONS.md, branding
+variant A). Mockup: https://claude.ai/artifact/HzQGeog8wXPSfLcyp6XFh8 (v2).
+Files in scope (all under `app/`):
+- Colours: `resources/css/app.css` (`:root` + `.dark` tokens, sidebar tokens, primary gradient)
+- Logo: `resources/js/components/layout/app-logo-icon.tsx` (Y5 mark, fill currentColor),
+  `app-logo.tsx` (name)
+- Name shown on screen: `config/app.php` default, `resources/js/app.tsx` fallback,
+  `public/site.webmanifest`, `.env.example*` APP_NAME, and the visible "Shoutrrr" strings in
+  `pages/auth/login.tsx`, `pages/auth/register.tsx`, `components/onboarding/welcome-modal.tsx`,
+  `pages/engagement/index.tsx`, `pages/error.tsx`, `pages/sync.tsx`, `pages/share/show.tsx`,
+  `pages/settings/workspace/api-keys.tsx`, `pages/mcp/landing.tsx`,
+  `components/settings/create-sync-pipeline-dialog.tsx`, `views/vendor/mail/html/header.blade.php`,
+  `app/Http/Controllers/Settings/NativeTrackingController.php`, `config/scramble.php`
+- Links: remove "Star on GitHub"/"Sponsor" (`sidebar-footer-card.tsx`) and the version/release-notes
+  badge (`app-sidebar.tsx`)
+- Icons: regenerate every file in `public/` (favicons, apple/android/mstile, icon-*.png,
+  favicon.ico, favicon.svg, shoutrrr.png mail logo) from the Y5 mark, lime on forest
+- Tests that pin the old brand: `tests/Feature/AppIconAssetsTest.php`,
+  `resources/js/layouts/auth/__tests__/auth-brand-text.test.ts`, `pages/engagement/index.test.ts`
+- Local data, no code: rename the local workspace to "Y5Media"
+Do NOT touch:
+- Internal identifiers (storage keys `shoutrrr:*`, class `ShoutrrrServer`, cache lock names,
+  `price_shoutrrr_*`) - invisible, renaming them only grows the upstream diff
+- "Shoutrrr Cloud" billing text (only shown when SELF_HOSTED=false; we run self-hosted)
+- Test fixtures that use "shoutrrr" as sample data (handles, URLs in linkify tests)
+- `app/LICENSE`; composer behaviour (Sprint 4, waiting on decisions)
+Acceptance criteria:
+- [x] No "Shoutrrr" text or megaphone visible on: login, register, dashboard, menu, welcome box,
+      posts, accounts, engagement, error page; browser tab says "Y5Media Social"
+- [x] Menu is forest green with the Y5 mark; buttons use the lime->green gradient; page and greys
+      use the Y5Media palette - in both light and dark themes
+- [x] Status chips still carry words and stay readable in both themes (rule 7) - only the "Draft"
+      chip could be seen (no connected accounts, so no Failed / Needs-reconnect data)
+- [x] All icon files regenerated at the sizes the icon test expects
+- [x] PHP suite passes (`scripts\test.ps1`), JS suite passes (vitest), Pint clean
+- [x] Rebuilt, opened in the browser, screenshots of login + dashboard in both themes
+- [x] Changed upstream files listed in `docs/UPSTREAM.md`
+
+Also closed by Sprint 3: Sprint 1's "release notes link points at .../releases/tag/ with no
+version" - the link was removed with the version badge.
+
+
+---
+
 ## Sprint 2 - A made-up invitation code must not create an account   [DONE 2026-10-16]
 Mode: Build (security fix in upstream code)
 Why: `/register` with ANY non-empty `invitation` value created an account (proven locally).

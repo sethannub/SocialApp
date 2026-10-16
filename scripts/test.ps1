@@ -2,7 +2,8 @@
 # The shoutrrr:dev image has no dev packages, so run-tests.sh installs them inside the
 # container only; the running app and its data are not touched.
 # The working-tree PHP code (app, config, database, routes, tests) is mounted over the image's
-# copy, so tests see uncommitted edits without a rebuild. Frontend changes still need --build.
+# copy, so tests see uncommitted edits without a rebuild. public/ (icons, built assets) comes from
+# the image, so after changing files in app/public rebuild the image first.
 # Result: scripts/out/pest.txt (git-ignored).
 $root = Split-Path $PSScriptRoot -Parent
 $out = Join-Path $PSScriptRoot 'out'
@@ -13,6 +14,7 @@ docker run --rm --entrypoint sh `
     -v "$root\app\config:/var/www/html/config:ro" `
     -v "$root\app\database:/var/www/html/database:ro" `
     -v "$root\app\routes:/var/www/html/routes:ro" `
+    -v "$root\app\resources:/var/www/html/resources:ro" `
     -v "$root\app\tests:/var/www/html/tests:ro" `
     -v "$root\app\phpunit.xml:/var/www/html/phpunit.xml:ro" `
     -v "${out}:/out" `
