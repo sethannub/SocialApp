@@ -5,6 +5,10 @@ declare(strict_types=1);
 return [
     'self_hosted' => env('SELF_HOSTED', false),
 
+    // SocialApp change: only this email may register as the first user (the owner).
+    // Empty = upstream behaviour (whoever registers first).
+    'owner_email' => env('INSTANCE_OWNER_EMAIL', ''),
+
     'community' => [
         'repo' => env('SHOUTRRR_GITHUB_REPO', 'coollabsio/shoutrrr'),
         'sponsor_url' => env('SHOUTRRR_SPONSOR_URL', 'https://github.com/sponsors/coollabsio'),

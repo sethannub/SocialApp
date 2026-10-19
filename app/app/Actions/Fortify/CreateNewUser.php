@@ -36,6 +36,19 @@ class CreateNewUser implements CreatesNewUsers
             ]);
         }
 
+        // SocialApp change: on a public server the first person to register becomes the
+        // instance owner. When INSTANCE_OWNER_EMAIL is set, only that email may claim it.
+        $ownerEmail = mb_strtolower(trim((string) config('instance.owner_email')));
+        if (
+            $ownerEmail !== ''
+            && ! $this->settings->ownerExists()
+            && mb_strtolower(trim((string) ($input['email'] ?? ''))) !== $ownerEmail
+        ) {
+            throw ValidationException::withMessages([
+                'email' => 'Registration is disabled for this instance.',
+            ]);
+        }
+
         if ($invitationToken !== null) {
             $invitation = WorkspaceInvitation::findByToken($invitationToken);
 
