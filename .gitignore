@@ -31,3 +31,6 @@ Thumbs.db
 
 # Test run output
 scripts/out/
+
+# Platform app keys, filled in by the user, deleted by scripts/set-keys-ezeos.ps1
+keys.env
