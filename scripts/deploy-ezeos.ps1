@@ -60,10 +60,14 @@ EOF
 else
   echo ".env already exists - left unchanged"
 fi
+# Repair any Windows line endings left by an earlier run.
+sed -i 's/\r$//' "$ENVF"
+chmod 600 "$ENVF"
 systemctl enable --now docker
 systemctl is-active docker
 '@
-    $script.Replace("`r`n", "`n") | ssh -o BatchMode=yes ezeos-live 'bash -s'
+    # PowerShell 5.1 re-adds CRLF when piping to a native command; the server strips it (tr -d '\r').
+    $script | ssh -o BatchMode=yes ezeos-live "tr -d '\r' | bash -s"
 }
 
 # 3. Build and (re)start
@@ -77,5 +81,5 @@ for i in $(seq 1 60); do
 done
 echo "app did not answer on 127.0.0.1:8095/up"; docker compose -p socialapp -f docker-compose.development.yaml logs --tail 40; exit 1
 '@
-$up.Replace("`r`n", "`n") | ssh -o BatchMode=yes ezeos-live 'bash -s'
+$up | ssh -o BatchMode=yes ezeos-live "tr -d '\r' | bash -s"
 "Deployed $sha."
