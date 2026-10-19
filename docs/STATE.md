@@ -18,6 +18,12 @@ Last updated: 2026-10-19. Keep under ~120 lines. History goes to
   7. Only **Facebook, Instagram, LinkedIn and X** (user, 2026-10-19). Bluesky, Discord and Threads
      off by default (`INSTANCE_PLATFORMS_DISABLED`), connect endpoints refuse while off; switched off
      on this PC via Instance settings -> Platforms.
+- **LIVE 2026-10-19 at https://social.y5media.net** (EZEOS, Docker, `/opt/socialapp/src/app`, 127.0.0.1:8095,
+  Cloudflare tunnel `leads-y5media`). Owner login: marketing@y5media.net (`INSTANCE_OWNER_EMAIL`).
+  Deploy: `scripts/deploy-ezeos.ps1` (user runs - production). Keys: `keys.env` + `scripts/set-keys-ezeos.ps1`.
+  Facebook + LinkedIn app keys set; X not. **LinkedIn connected** (personal profile). Facebook /
+  Instagram connect pending: the colleague who manages the Facebook account must log in.
+  Instagram scopes trimmed (2 rejected by Facebook Login).
 - **Nothing has ever been published.** No real social account is connected; no platform keys in
   `app/.env`.
 - On GitHub: everything up to `25971a7` (end-of-session save, 2026-10-16).
