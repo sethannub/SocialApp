@@ -16,7 +16,7 @@ use App\Support\InstanceSettings;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
-    config(['instance.defaults.platforms_disabled' => ['bluesky', 'discord']]);
+    config(['instance.defaults.platforms_disabled' => ['bluesky', 'discord', 'threads']]);
 });
 
 function platformsOwner(): void
@@ -32,16 +32,52 @@ function platformsOwner(): void
     test()->actingAs($user);
 }
 
-test('a fresh install starts with Bluesky and Discord off and our five platforms on', function () {
+test('a fresh install starts with only Facebook, Instagram, LinkedIn and X on', function () {
     $enabled = app(InstanceSettings::class)->platformsEnabled();
 
     expect($enabled['bluesky'])->toBeFalse()
         ->and($enabled['discord'])->toBeFalse()
+        ->and($enabled['threads'])->toBeFalse()
         ->and($enabled['facebook'])->toBeTrue()
         ->and($enabled['instagram'])->toBeTrue()
         ->and($enabled['linkedin'])->toBeTrue()
-        ->and($enabled['threads'])->toBeTrue()
         ->and($enabled['x'])->toBeTrue();
+});
+
+test('the shipped default list switches off Bluesky, Discord and Threads', function () {
+    // phpunit.xml empties INSTANCE_PLATFORMS_DISABLED for upstream tests, so check the
+    // default written in config/instance.php itself.
+    expect((string) file_get_contents(config_path('instance.php')))
+        ->toContain("env('INSTANCE_PLATFORMS_DISABLED', 'bluesky,discord,threads')");
+});
+
+function configureThreadsApp(): void
+{
+    // Without app keys the generic OAuth flow 404s anyway; configure it so only the switch matters.
+    config([
+        'services.threads.client_id' => 'test-threads-id',
+        'services.threads.client_secret' => 'test-threads-secret',
+        'services.threads.redirect' => 'http://localhost/accounts/callback/threads',
+    ]);
+}
+
+test('connecting Threads is refused while it is off, even with app keys set', function () {
+    platformsOwner();
+    configureThreadsApp();
+    Http::fake();
+
+    $this->get('/accounts/connect/threads')->assertNotFound();
+
+    Http::assertNothingSent();
+});
+
+test('connecting Threads starts normally once it is switched back on', function () {
+    platformsOwner();
+    configureThreadsApp();
+    $settings = app(InstanceSettings::class);
+    $settings->update(['platforms_enabled' => [...$settings->platformsEnabled(), 'threads' => true]]);
+
+    $this->get('/accounts/connect/threads')->assertRedirect();
 });
 
 test('a choice saved on the Platforms page wins over the default', function () {

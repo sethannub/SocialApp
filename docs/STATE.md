@@ -15,8 +15,9 @@ Last updated: 2026-10-19. Keep under ~120 lines. History goes to
   5. Dubai time on screen (`APP_DISPLAY_TIMEZONE`); every schedule time stored as UTC (fixed an
      upstream bug that saved "14:30+04:00" as 14:30 UTC).
   6. Preview / counter split long text exactly like the server (server-generated parity fixture).
-  7. Bluesky + Discord off by default (`INSTANCE_PLATFORMS_DISABLED`) and their connect endpoints
-     refuse while off; switched off on this PC via Instance settings -> Platforms.
+  7. Only **Facebook, Instagram, LinkedIn and X** (user, 2026-10-19). Bluesky, Discord and Threads
+     off by default (`INSTANCE_PLATFORMS_DISABLED`), connect endpoints refuse while off; switched off
+     on this PC via Instance settings -> Platforms.
 - **Nothing has ever been published.** No real social account is connected; no platform keys in
   `app/.env`.
 - On GitHub: everything up to `25971a7` (end-of-session save, 2026-10-16).
@@ -32,7 +33,7 @@ Last updated: 2026-10-19. Keep under ~120 lines. History goes to
   (`TEST_LOGIN_PASSWORD`, git-ignored). Workspace renamed "Y5Media".
 - Checks (all run in throwaway containers, nothing installed on this PC):
   - PHP: `.\scripts\test.ps1` - Pest; set `$env:PINT_FILES` for Pint + Larastan on those files,
-    `$env:PEST_FILTER` for one file. Baseline: **2060 passed**.
+    `$env:PEST_FILTER` for one file. Baseline: **2063 passed**.
   - JS: `docker run --rm --entrypoint sh -v "$PWD\app:/src:ro" -v "$PWD\scripts\out:/out" -v "$PWD\scripts:/scripts:ro" shoutrrr:dev /scripts/run-js-tests.sh`
     -> `scripts/out/js.txt` (vitest, oxlint, `oxfmt exit`, `tsc exit`). Baseline: **920/921**,
     the 1 failure is upstream's (`build-feedback-payload.test.ts`), also fails untouched.

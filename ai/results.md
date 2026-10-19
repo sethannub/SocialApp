@@ -14,6 +14,21 @@ Entry shape:
 
 ---
 
+## 2026-10-19 - Sprint 7b: Threads off too (user: "the main social media accounts we need are
+## instagram facebook linkedin and X"; "yes switch threads off too")
+- Mode: Build (small follow-up to Sprint 7).
+- What changed: `config/instance.php` default `bluesky,discord,threads`; `.env.example*`;
+  `PlatformsDisabledByDefaultTest.php` (fresh install = only FB/IG/LinkedIn/X on; shipped default
+  checked in the file; Threads refused while off **with app keys set** and starts normally when
+  switched back on - the pair proves the switch, not the missing keys, does the refusing).
+  Local data: Threads unticked on Instance settings -> Platforms (saved: only x, linkedin,
+  facebook, instagram true).
+- Review finding: my first Threads test passed for the wrong reason (no app keys -> 404 anyway).
+  Fixed by configuring test keys and adding the "switched on" counterpart.
+- PHP **2063 passed** (2060 + 3 new); platform tests 8/8; Pint + Larastan clean. Rebuilt; live
+  switches: only x, linkedin, facebook, instagram on.
+- Commit: see git log ("Sprint 7b: ...")
+
 ## 2026-10-19 - Sprint 7: Bluesky and Discord off by default, and really off
 - Mode: Build. Closed open item "Bluesky and Discord can be connected with no app keys".
 - What changed (marked "SocialApp change:"):
