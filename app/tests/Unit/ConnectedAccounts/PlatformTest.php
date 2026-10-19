@@ -40,8 +40,12 @@ test('platforms report whether their connector can like a reply', function () {
         ->and(Platform::Threads->supportsReplyLikes())->toBeFalse();
 });
 
-test('instagram requests the engagement scope that powers reply likes', function () {
-    expect(Platform::Instagram->scopes())->toContain('instagram_manage_engagement');
+// SocialApp change: these two scopes blocked Facebook Login for our Meta app ("Invalid Scopes").
+test('instagram does not request the scopes Facebook Login rejected', function () {
+    expect(Platform::Instagram->scopes())
+        ->not->toContain('instagram_manage_engagement')
+        ->not->toContain('instagram_manage_insights')
+        ->toContain('instagram_content_publish');
 });
 
 test('socialite driver names match core socialite keys', function () {

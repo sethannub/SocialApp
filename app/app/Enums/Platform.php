@@ -63,7 +63,10 @@ enum Platform: string
             // `instagram_manage_engagement` powers the Like Media and Comments
             // API (2026-04-22) used to like/unlike replies from the inbox;
             // without it the like call 403s → Unsupported.
-            self::Instagram => ['instagram_basic', 'instagram_content_publish', 'instagram_manage_comments', 'instagram_manage_insights', 'instagram_manage_engagement', 'pages_show_list', 'business_management'],
+            // SocialApp change: `instagram_manage_insights` and `instagram_manage_engagement`
+            // removed - Facebook Login rejected them as invalid scopes for our Meta app and blocked
+            // connecting (2026-10-19). We only post; reply likes / IG insights are not used.
+            self::Instagram => ['instagram_basic', 'instagram_content_publish', 'instagram_manage_comments', 'pages_show_list', 'business_management'],
             // `threads_delete` is required for DELETE /{threads-media-id}; without it
             // Graph returns 403 and the post remains on Threads.
             self::Threads => ['threads_basic', 'threads_content_publish', 'threads_manage_replies', 'threads_manage_insights', 'threads_delete'],
