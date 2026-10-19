@@ -60,6 +60,10 @@ Each changed upstream file carries a "SocialApp change:" comment at the change.
 | `app/resources/js/components/compose/composer.tsx` | `liveSections()` for counter + tab chip; per-part severity | Counter read page-load targets | 6 |
 | `app/tests/Fixtures/post-splitter-overlimit-parity.json` (new), `tests/Unit/Posts/PostSplitterOverlimitParityTest.php` (new), `section-split.test.ts`, `platform-preview.test.ts`, `composer-tabs.test.ts` | Server-generated parity cases; one upstream expectation corrected | | 6 |
 
+| `app/config/instance.php`, `app/Support/InstanceSettings.php` | `platforms_disabled` default (Bluesky, Discord) when no choice is saved | We don't use them; they connect without app keys | 7 |
+| `app/Http/Requests/ConnectedAccount/Connect{Bluesky,Discord}Request.php`, `ConnectedAccounts/BlueskyOAuthController.php` | Refuse while the platform is switched off | Upstream only hid the button | 7 |
+| `app/phpunit.xml`, `tests/Feature/PlatformsDisabledByDefaultTest.php` (new) | Upstream tests keep "all on"; ours set the list | | 7 |
+
 Merge note: a future `git subtree pull` will conflict in most of the Sprint 3 files. Resolve by
 keeping upstream's code and re-applying the name/colour change; `scripts/branding/build-icons.ps1`
 regenerates the icons.

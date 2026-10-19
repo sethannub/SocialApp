@@ -2,6 +2,43 @@
 
 ---
 
+## Sprint 7 - Bluesky and Discord off by default, and really off   [DONE 2026-10-19]
+Mode: Build. Fixes open item 2.
+Why: we only use Facebook, Instagram, LinkedIn, Threads and X. Bluesky (app password) and
+Discord (webhook) can be connected with no app keys, so an account could be added by accident.
+What exists (read, not guessed):
+- Instance settings -> Platforms has a per-platform switch (`platforms_enabled`). When off, the
+  composer, publishing jobs, the OAuth connect flow, the Meta flow and the accounts page's connect
+  list all respect it (`InstanceSettings::platformAvailable`, `accounts/index.tsx:57`).
+- Gap 1: the Bluesky app-password, Bluesky OAuth and Discord webhook connect endpoints do NOT
+  check it (`BlueskyConnectionController`, `BlueskyOAuthController`, `DiscordConnectionController`,
+  their FormRequests only check "may create accounts"). Switching off hides the button only.
+- Gap 2: with nothing saved, every platform defaults to ON (`platformEnabledValues`), and the
+  choice lives in the database - a fresh server install would start with both on.
+Files in scope (under `app/`):
+- `config/instance.php` - `defaults.platforms_disabled` from env `INSTANCE_PLATFORMS_DISABLED`,
+  default `bluesky,discord`
+- `app/Support/InstanceSettings.php` - for `platforms_enabled` only: when nothing is saved, the
+  listed platforms start OFF. A choice saved on the Platforms page still wins (owner can re-enable)
+- `app/Http/Requests/ConnectedAccount/ConnectBlueskyRequest.php`, `ConnectDiscordRequest.php`,
+  `app/Http/Controllers/ConnectedAccounts/BlueskyOAuthController.php` - refuse when the platform
+  is switched off (same check the OAuth flow already uses)
+- `phpunit.xml` - `INSTANCE_PLATFORMS_DISABLED=""` so upstream tests keep "all on"; our test sets
+  the list explicitly
+- `.env.example*` - document it
+- New test: `tests/Feature/PlatformsDisabledByDefaultTest.php`
+Do NOT touch:
+- The Platforms settings page itself, polling switches, any other platform's connect flow
+Acceptance criteria:
+- [x] Fresh install: Bluesky and Discord off, the five we use on - tested
+- [x] Owner turns Bluesky on in Platforms -> it is on (saved choice wins) - tested
+- [x] Connecting Bluesky (app password or OAuth) or Discord while off is refused, and nothing is
+      stored - tested; while on, still works (upstream tests stay green)
+- [x] Browser: Connect account list has no Bluesky / Discord; Platforms page shows them off
+- [x] PHP + JS suites pass; Pint / Larastan / oxlint / oxfmt / tsc clean
+
+---
+
 ## Sprint 6 - The preview must split long text the way the server will   [DONE 2026-10-16]
 Mode: Debug -> Build. Fixes open item 1.
 Why: a 318-character one-paragraph post shows red "318/280" and "Single post" in the composer and

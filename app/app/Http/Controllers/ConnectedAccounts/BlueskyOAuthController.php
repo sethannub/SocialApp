@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\ConnectedAccounts;
 
+use App\Enums\Platform;
 use App\Http\Controllers\Controller;
 use App\Models\ConnectedAccount;
 use App\Services\ConnectedAccounts\AccountConnectionService;
 use App\Services\ConnectedAccounts\BlueskyOAuthConnector;
+use App\Support\InstanceSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,6 +27,8 @@ class BlueskyOAuthController extends Controller
     public function redirect(Request $request): RedirectResponse
     {
         $request->user()->can('create', ConnectedAccount::class) ?: abort(403);
+        // SocialApp change: same rule as the generic OAuth flow - a switched-off platform is a 404.
+        abort_unless(app(InstanceSettings::class)->platformAvailable(Platform::Bluesky), 404);
 
         $validated = $request->validate([
             'identifier' => ['nullable', 'string', 'max:255'],
@@ -75,6 +79,8 @@ class BlueskyOAuthController extends Controller
     public function callback(Request $request): RedirectResponse
     {
         $request->user()->can('create', ConnectedAccount::class) ?: abort(403);
+        // SocialApp change: same rule as the generic OAuth flow - a switched-off platform is a 404.
+        abort_unless(app(InstanceSettings::class)->platformAvailable(Platform::Bluesky), 404);
 
         if ($request->filled('error')) {
             return redirect()->route('accounts.index')->with('error', 'Bluesky did not authorize the connection.');

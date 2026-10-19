@@ -19,6 +19,13 @@ return [
         'usage_tracking_enabled' => env('INSTANCE_USAGE_TRACKING_ENABLED', false),
         'quote_tweets_enabled' => env('INSTANCE_QUOTE_TWEETS_ENABLED', false),
         'linkedin_community_management_enabled' => env('INSTANCE_LINKEDIN_COMMUNITY_MANAGEMENT_ENABLED', false),
+        // SocialApp change: platforms that start switched OFF under Instance settings -> Platforms
+        // until the owner saves a choice there. We only use Facebook, Instagram, LinkedIn,
+        // Threads and X; Bluesky and Discord connect without app keys, so they start off.
+        'platforms_disabled' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('INSTANCE_PLATFORMS_DISABLED', 'bluesky,discord')),
+        ))),
         'polling' => [
             'engagement' => [
                 'x' => 360,

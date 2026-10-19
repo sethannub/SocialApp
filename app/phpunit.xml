@@ -21,6 +21,8 @@
         <env name="APP_ENV" value="testing"/>
         <!-- SocialApp change: upstream tests expect a UTC fallback; DisplayTimezoneTest sets Asia/Dubai itself. -->
         <env name="APP_DISPLAY_TIMEZONE" value="UTC"/>
+        <!-- SocialApp change: upstream tests expect every platform on; PlatformsDisabledByDefaultTest sets the list itself. -->
+        <env name="INSTANCE_PLATFORMS_DISABLED" value=""/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

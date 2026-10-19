@@ -14,6 +14,39 @@ Entry shape:
 
 ---
 
+## 2026-10-19 - Sprint 7: Bluesky and Discord off by default, and really off
+- Mode: Build. Closed open item "Bluesky and Discord can be connected with no app keys".
+- What changed (marked "SocialApp change:"):
+  - `config/instance.php`: `defaults.platforms_disabled` from env `INSTANCE_PLATFORMS_DISABLED`
+    (default `bluesky,discord`).
+  - `app/Support/InstanceSettings.php`: for `platforms_enabled` with no saved choice, those start
+    off. A saved choice (Platforms page) still wins.
+  - `ConnectBlueskyRequest`, `ConnectDiscordRequest` (authorize) and `BlueskyOAuthController`
+    (redirect + callback, 404 like the generic OAuth flow) refuse while the platform is off.
+  - `phpunit.xml`: `INSTANCE_PLATFORMS_DISABLED=""` so upstream tests keep "all on".
+  - `.env.example*` documented. New `tests/Feature/PlatformsDisabledByDefaultTest.php` (5).
+  - Local data: Bluesky + Discord unticked on Instance settings -> Platforms.
+- Acceptance criteria:
+  - Fresh install: Bluesky + Discord off, our five on: met (test). Only the Platforms page writes
+    this setting (read: `InstanceSettingsController::updatePlatforms`; startup only migrates), so a
+    new server really starts this way.
+  - Saved choice wins: met (test).
+  - Connect refused while off, nothing stored, no outbound call: met (3 tests; 4 of the 5 new
+    tests fail on the old code). Upstream Bluesky/Discord tests still pass with everything on.
+  - Browser: Platforms page unticked (saved instantly, checked in the DB); Connect account list
+    shows only X, LinkedIn, Facebook / Instagram, Threads: met.
+  - PHP **2060 passed**, Pint exit 0, phpstan exit 0; JS 920/921 (1 known baseline), oxlint 0/0,
+    oxfmt exit 0, tsc exit 0.
+- Review findings:
+  - This PC already had a saved "all on" Platforms choice (created 2026-10-16, last saved
+    2026-10-19 04:35 UTC = 08:35 Dubai). Each tick on that page saves instantly, so one click by the
+    user is enough; the container's startup and the General / Polling pages do not write it
+    (all read). So the default never applied here - the saved choice won, as designed. Switched off
+    through the page instead of overriding it in code.
+  - First click on the Bluesky checkbox (by element reference) did not toggle; clicking the visible
+    box did. Tool detail, not an app bug.
+- Commit: see git log ("Sprint 7: ...")
+
 ## 2026-10-16 - Sprint 6: the preview splits long text the way the server will
 - Mode: Debug -> Build. Closed open item "X preview disagrees with what will be posted".
 - Cause (read + proven): server `PostSplitter::chunk()` breaks an over-limit paragraph on words

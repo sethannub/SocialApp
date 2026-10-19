@@ -296,6 +296,23 @@ class InstanceSettings
      */
     private function platformEnabledValues(string $key): array
     {
+        // SocialApp change: with no saved choice, platforms listed in
+        // instance.defaults.platforms_disabled start switched off (platforms_enabled only).
+        if ($key === 'platforms_enabled' && ! array_key_exists($key, $this->settings())) {
+            /** @var list<string> $disabled */
+            $disabled = (array) config('instance.defaults.platforms_disabled', []);
+
+            return array_reduce(
+                Platform::cases(),
+                function (array $values, Platform $platform) use ($disabled): array {
+                    $values[$platform->value] = ! in_array($platform->value, $disabled, true);
+
+                    return $values;
+                },
+                [],
+            );
+        }
+
         $stored = $this->settings()[$key] ?? true;
 
         if (is_bool($stored)) {
