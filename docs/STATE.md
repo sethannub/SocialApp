@@ -26,8 +26,11 @@ Last updated: 2026-10-19. Keep under ~120 lines. History goes to
   Connected + working: **new Facebook Page, @y5media.ae (Instagram), Threads y5media.ae (separate Meta
   app "Y5Media Threads"), LinkedIn (personal profile Basit Javed)**. First real posts done by the user
   (04 How it works on LinkedIn; 02 No Google on FB + IG). Still to do: user disconnects the old
-  hacked Page + @y5mediallc in Accounts; X needs paid API credits (user to decide); LinkedIn company
-  page needs Community Management API approval. Instagram scopes trimmed (2 rejected by Facebook Login).
+  hacked Page + @y5mediallc in Accounts; X needs paid API credits (user to decide); LinkedIn: personal profile disconnected
+  (user wants the company page only). Community Management API requested 2026-10-20 on a SEPARATE
+  LinkedIn app (CM API must be the only product) - **under review by LinkedIn**. Then: tick "LinkedIn
+  Pages (Community Management API)" in Platforms, new app keys via keys.env, Connect -> Y5Media Page.
+  User's own profile could not be added as Page admin ("limit reached") - unresolved. Instagram scopes trimmed (2 rejected by Facebook Login).
 - **Nothing has ever been published.** No real social account is connected; no platform keys in
   `app/.env`.
 - On GitHub: everything up to `25971a7` (end-of-session save, 2026-10-16).
