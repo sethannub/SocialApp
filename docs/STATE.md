@@ -21,9 +21,13 @@ Last updated: 2026-10-19. Keep under ~120 lines. History goes to
 - **LIVE 2026-10-19 at https://social.y5media.net** (EZEOS, Docker, `/opt/socialapp/src/app`, 127.0.0.1:8095,
   Cloudflare tunnel `leads-y5media`). Owner login: marketing@y5media.net (`INSTANCE_OWNER_EMAIL`).
   Deploy: `scripts/deploy-ezeos.ps1` (user runs - production). Keys: `keys.env` + `scripts/set-keys-ezeos.ps1`.
-  Facebook + LinkedIn app keys set; X not. **LinkedIn connected** (personal profile). Facebook /
-  Instagram connect pending: the colleague who manages the Facebook account must log in.
-  Instagram scopes trimmed (2 rejected by Facebook Login).
+  2026-10-20: old Facebook Business was **hacked** -> new Business portfolio, new Page, new Instagram
+  **@y5media.ae**, new Meta app **Y5Media Social** (old app "Y5Media Postings" deactivated by Meta).
+  Connected + working: **new Facebook Page, @y5media.ae (Instagram), Threads y5media.ae (separate Meta
+  app "Y5Media Threads"), LinkedIn (personal profile Basit Javed)**. First real posts done by the user
+  (04 How it works on LinkedIn; 02 No Google on FB + IG). Still to do: user disconnects the old
+  hacked Page + @y5mediallc in Accounts; X needs paid API credits (user to decide); LinkedIn company
+  page needs Community Management API approval. Instagram scopes trimmed (2 rejected by Facebook Login).
 - **Nothing has ever been published.** No real social account is connected; no platform keys in
   `app/.env`.
 - On GitHub: everything up to `25971a7` (end-of-session save, 2026-10-16).
