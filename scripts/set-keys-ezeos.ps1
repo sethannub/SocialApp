@@ -10,7 +10,7 @@ $root = Split-Path $PSScriptRoot -Parent
 $file = Join-Path $root 'keys.env'
 if (-not (Test-Path $file)) { throw "Create $file first (one KEY=value per line)." }
 
-$allowed = 'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET', 'LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET', 'X_CLIENT_ID', 'X_CLIENT_SECRET'
+$allowed = 'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET', 'LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET', 'X_CLIENT_ID', 'X_CLIENT_SECRET', 'THREADS_CLIENT_ID', 'THREADS_CLIENT_SECRET'
 $lines = @()
 foreach ($raw in Get-Content $file) {
     $line = $raw.Trim()
@@ -22,6 +22,8 @@ foreach ($raw in Get-Content $file) {
     $lines += "$name=$value"
 }
 if ($lines.Count -eq 0) { throw 'keys.env has no keys.' }
+# Threads needs its callback address on the server too (not secret).
+if ($lines | Where-Object { $_ -like 'THREADS_CLIENT_ID=*' }) { $lines += 'THREADS_REDIRECT_URI=https://social.y5media.net/accounts/callback/threads' }
 "Sending: $((($lines | ForEach-Object { ($_ -split '=', 2)[0] }) -join ', '))"
 
 $tmp = Join-Path $root 'scripts\out\keys.upload'
